@@ -1,0 +1,12 @@
+.NodeItem {
+    display: flex;
+    background-color: beige;
+}
+
+.Content {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}
+

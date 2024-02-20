@@ -1,3 +1,8 @@
+@import 'App.css';
+@import "components/Dialog/Dialog.css";
+@import "components/Tag/Tag.css";
+@import "components/NoteItem/NodeItem.css";
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,5 +10,64 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  all: unset;
+}
+
+
+input {
+  all: unset;
+  background-color: white;
+  border: 1px solid #b4b2b2;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: text;
+  font-size: 14px;
+  line-height: 20px;
+
+}
+
+ul {
+  margin: 0;
+}
+button {
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+  background-color: cornflowerblue;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .4;
+  cursor: default;
+}
+
+button:hover:not(:disabled) {
+  opacity: .7;
+}
+
+button:focus {
+  outline: 2px solid #2355a2;
+}
+
+input:hover {
+  border: 1px solid #49bdbd;
+
+}
+
+input:focus {
+  outline: 2px solid #4c7ccb;
+
+}
+
+
+p, h3 {
+  margin: 0;
 }
 

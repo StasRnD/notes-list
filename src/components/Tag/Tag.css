@@ -1,0 +1,31 @@
+.Tag {
+    padding: 5px 10px;
+    text-align: center;
+    color: antiquewhite;
+    font-size: 14px;
+    line-height: 20px;
+    border-radius: 10px;
+}
+
+.Tag:hover {
+   cursor: pointer;
+    opacity: .7;
+}
+
+.shopping {
+    background-color: #a171d2;
+}
+
+.business {
+    background-color: #e088d2;
+}
+
+.other {
+    background-color: #eeaa79;
+
+}
+
+.active {
+
+    box-shadow: 0 3px 4px 0 rgba(41, 41, 64, 1) inset
+}
