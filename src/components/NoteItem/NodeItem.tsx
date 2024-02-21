@@ -1,8 +1,8 @@
 import React from "react";
-import { State } from "../../App";
+import { NoteItem } from "../types";
 
 interface NodeItemProps {
-  item: State;
+  item: NoteItem;
   onClick: VoidFunction;
   onClickDeleteButton: VoidFunction;
 }

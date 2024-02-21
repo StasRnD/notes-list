@@ -3,59 +3,44 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Tag } from "../Tag/Tag";
 import isEqual from "lodash/isEqual";
+import { updateNotes } from "../../utils";
+import { NoteItem } from "../types";
+
 interface DialogProps {
   toggleOpen: VoidFunction;
-  item: Omit<State, "listItemText">;
+  item: NoteItem;
+  notes: NoteItem[];
+  setNotes: React.Dispatch<React.SetStateAction<NoteItem[]>>;
 }
 
-interface State {
-  title: string;
-  description: string;
-  tags: {
-    isBus: boolean;
-    isShop: boolean;
-    isOther: boolean;
-  };
-  id: number;
-  listItemText: string;
-  list: string[];
-}
-
-export const Dialog: React.FC<DialogProps> = ({ toggleOpen, item }) => {
-  const formik = useFormik<State>({
+export const Dialog: React.FC<DialogProps> = ({
+  toggleOpen,
+  item,
+  notes,
+  setNotes,
+}) => {
+  const formik = useFormik<NoteItem & { listItemText: string }>({
     initialValues: {
       ...item,
       listItemText: "",
     },
     onSubmit: ({ listItemText, ...itemInForm }) => {
-      const notesJsonInLocalStorage = localStorage.getItem("notes");
-      console.log(notesJsonInLocalStorage);
-      if (notesJsonInLocalStorage) {
-        let arrayNotes: DialogProps["item"][] = Array.from(
-          JSON.parse(notesJsonInLocalStorage),
+      if (itemInForm.id === 0) {
+        itemInForm.id = notes.length + 1;
+        updateNotes({ notes: [...notes, itemInForm], setNotes });
+      }
+
+      if (itemInForm.id === item.id) {
+        const notesForUpdate = notes.reduce(
+          (acc, noteItem) => {
+            if (noteItem.id === itemInForm.id) {
+              return [...acc, itemInForm];
+            }
+            return [...acc, noteItem];
+          },
+          [] as DialogProps["item"][],
         );
-
-        if (!item.id) {
-          itemInForm.id = arrayNotes.length + 1;
-          arrayNotes.push(itemInForm);
-        }
-
-        if (item.id === itemInForm.id) {
-          arrayNotes = arrayNotes.reduce(
-            (acc, el) => {
-              if (el.id === itemInForm.id) {
-                return [...acc, itemInForm];
-              }
-              return [...acc, el];
-            },
-            [] as DialogProps["item"][],
-          );
-        }
-
-        localStorage.setItem("notes", JSON.stringify(arrayNotes, null, 1));
-      } else {
-        itemInForm.id = 1;
-        localStorage.setItem("notes", JSON.stringify([itemInForm], null, 1));
+        updateNotes({ notes: notesForUpdate, setNotes });
       }
       toggleOpen();
     },
@@ -77,7 +62,7 @@ export const Dialog: React.FC<DialogProps> = ({ toggleOpen, item }) => {
     }),
   });
 
-  const handleCheckboxChange = (name: keyof State["tags"]) => {
+  const handleCheckboxChange = (name: keyof NoteItem["tags"]) => {
     formik.setFieldValue(`tags.${name}`, !formik.values.tags[name]);
   };
 
@@ -139,8 +124,8 @@ export const Dialog: React.FC<DialogProps> = ({ toggleOpen, item }) => {
           </label>
           {formik.values.list.length > 0 && (
             <ul>
-              {formik.values.list.map((item) => (
-                <li>{item}</li>
+              {formik.values.list.map((item, index) => (
+                <li key={index}>{item}</li>
               ))}
             </ul>
           )}
@@ -155,15 +140,15 @@ export const Dialog: React.FC<DialogProps> = ({ toggleOpen, item }) => {
             <Tag
               className={"TagItem"}
               variant={"business"}
-              active={formik.values.tags.isBus}
-              onClick={() => handleCheckboxChange("isBus")}
+              active={formik.values.tags.isBusiness}
+              onClick={() => handleCheckboxChange("isBusiness")}
             />
 
             <Tag
               className={"TagItem"}
               variant={"shopping"}
-              active={formik.values.tags.isShop}
-              onClick={() => handleCheckboxChange("isShop")}
+              active={formik.values.tags.isShopping}
+              onClick={() => handleCheckboxChange("isShopping")}
             />
 
             <Tag
@@ -173,11 +158,11 @@ export const Dialog: React.FC<DialogProps> = ({ toggleOpen, item }) => {
               onClick={() => handleCheckboxChange("isOther")}
             />
 
-            {formik.touched.tags && formik.errors.tags ? (
+            {formik.touched.tags && formik.errors.tags && (
               <span className={"Error"}>
                 Необходимо выбрать хотя бы один тег
               </span>
-            ) : null}
+            )}
           </div>
           <button
             disabled={isEqual({ ...item, listItemText: "" }, formik.values)}

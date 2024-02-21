@@ -4,13 +4,15 @@ import { Dialog } from "./components/Dialog/Dialog";
 import { NodeItem } from "./components/NoteItem/NodeItem";
 import { Tag } from "./components/Tag/Tag";
 import { filterByTags } from "./components/utils";
+import { updateNotes } from "./utils";
+import { NoteItem } from "./components/types";
 
-const initialState: State = {
+const initialItemForForm: NoteItem = {
   title: "",
   description: "",
   tags: {
-    isBus: false,
-    isShop: false,
+    isBusiness: false,
+    isShopping: false,
     isOther: false,
   },
 
@@ -18,48 +20,30 @@ const initialState: State = {
   id: 0,
 };
 
-export interface State {
-  title: string;
-  description: string;
-  tags: {
-    isBus: boolean;
-    isShop: boolean;
-    isOther: boolean;
-  };
-
-  list: string[];
-  id: number;
-}
-
-export interface FilterSettingProps {
-  isBus: boolean;
-  isShop: boolean;
-  isOther: boolean;
-}
-
 const App = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [visItem, setVisItem] = useState<State>(initialState);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [itemForForm, setItemForForm] = useState<NoteItem>(initialItemForForm);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [filterSetting, setFilterSetting] = useState<FilterSettingProps>({
-    isBus: false,
-    isShop: false,
+  const [filterSetting, setFilterSetting] = useState<NoteItem["tags"]>({
+    isBusiness: false,
+    isShopping: false,
     isOther: false,
   });
-  const a = localStorage.getItem("notes");
-  const [arrayNotesList, setArrayNotesList] = useState<State[]>([]);
+  const [notes, setNotes] = useState<NoteItem[]>([]);
 
   useEffect(() => {
     const json = localStorage.getItem("notes");
-    setArrayNotesList(() => (json ? JSON.parse(json) : []));
-  }, [a]);
+    if (json !== null) {
+      updateNotes({ notes: JSON.parse(json), setNotes });
+    }
+  }, []);
 
-  const handleToggleOpen = (item: State) => {
-    setOpen((old) => !old);
-    setVisItem(() => item);
+  const handleToggleOpen = (item: NoteItem) => {
+    setItemForForm(() => item);
+    setOpenDialog((openValue) => !openValue);
   };
 
-  const handleChangeFilterSetting = (name: keyof FilterSettingProps) => {
+  const handleChangeFilterSetting = (name: keyof NoteItem["tags"]) => {
     setFilterSetting((oldValue) => {
       return {
         ...oldValue,
@@ -75,47 +59,48 @@ const App = () => {
   };
 
   const deleteNote = (id: number) => {
-    const newArray = arrayNotesList.filter((item) => {
+    const newArray = notes.filter((item) => {
       return item.id !== id;
     });
 
-    setArrayNotesList(newArray);
-
-    if (arrayNotesList.length === 1) {
-      localStorage.removeItem("notes");
-    } else {
-      localStorage.setItem("notes", JSON.stringify(newArray, null, 1));
-    }
+    updateNotes({ notes: newArray, setNotes });
   };
 
   return (
     <div className="App">
-      {open && (
+      {openDialog && (
         <Dialog
-          toggleOpen={() => handleToggleOpen(initialState)}
-          item={visItem}
+          toggleOpen={() => handleToggleOpen(initialItemForForm)}
+          item={itemForForm}
+          notes={notes}
+          setNotes={setNotes}
         />
       )}
-      <button onClick={() => setOpen((old) => !old)}>открыть</button>
+      <button onClick={() => setOpenDialog((openValue) => !openValue)}>
+        открыть
+      </button>
       <input value={searchValue} onChange={handleChangeSearchInput} />
       <div>
         <Tag
+          active={filterSetting.isBusiness}
           variant={"business"}
-          onClick={() => handleChangeFilterSetting("isBus")}
+          onClick={() => handleChangeFilterSetting("isBusiness")}
         />
         <Tag
+          active={filterSetting.isShopping}
           variant={"shopping"}
-          onClick={() => handleChangeFilterSetting("isShop")}
+          onClick={() => handleChangeFilterSetting("isShopping")}
         />
         <Tag
           variant={"all other"}
+          active={filterSetting.isOther}
           onClick={() => handleChangeFilterSetting("isOther")}
         />
       </div>
       <div>
-        {arrayNotesList ? (
+        {notes ? (
           <ul>
-            {arrayNotesList
+            {notes
               .filter((item) => {
                 return filterByTags(item, filterSetting);
               })
