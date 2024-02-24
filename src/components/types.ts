@@ -9,4 +9,13 @@ export interface NoteItem {
 
   list: string[];
   id: number;
+  groups: {
+    isFavorite: boolean;
+    isTrust: boolean;
+  };
 }
+
+export type FilterSetting = {
+  tags: NoteItem["tags"];
+  groups: keyof NoteItem["groups"] | null;
+};

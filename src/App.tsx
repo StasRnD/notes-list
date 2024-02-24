@@ -5,7 +5,7 @@ import { NodeItem } from "./components/NoteItem/NodeItem";
 import { Tag } from "./components/Tag/Tag";
 import { filterByTags } from "./components/utils";
 import { updateNotes } from "./utils";
-import { NoteItem } from "./components/types";
+import { NoteItem, FilterSetting } from "./components/types";
 
 const initialItemForForm: NoteItem = {
   title: "",
@@ -15,20 +15,27 @@ const initialItemForForm: NoteItem = {
     isShopping: false,
     isOther: false,
   },
+  groups: {
+    isFavorite: false,
+    isTrust: false,
+  },
 
   list: [],
   id: 0,
+};
+
+const initialFilter: FilterSetting = {
+  tags: { isBusiness: false, isShopping: false, isOther: false },
+  groups: null,
 };
 
 const App = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [itemForForm, setItemForForm] = useState<NoteItem>(initialItemForForm);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [filterSetting, setFilterSetting] = useState<NoteItem["tags"]>({
-    isBusiness: false,
-    isShopping: false,
-    isOther: false,
-  });
+  const [filterSetting, setFilterSetting] =
+    useState<FilterSetting>(initialFilter);
+
   const [notes, setNotes] = useState<NoteItem[]>([]);
 
   useEffect(() => {
@@ -43,11 +50,25 @@ const App = () => {
     setOpenDialog((openValue) => !openValue);
   };
 
-  const handleChangeFilterSetting = (name: keyof NoteItem["tags"]) => {
+  const handleChangeFilterSettingToTags = (
+    name: keyof FilterSetting["tags"],
+  ) => {
     setFilterSetting((oldValue) => {
       return {
         ...oldValue,
-        [name]: !oldValue[name],
+        tags: {
+          ...oldValue.tags,
+          [name]: !oldValue.tags[name],
+        },
+      };
+    });
+  };
+
+  const handleChangeFilterSettingToGroups = (name: FilterSetting["groups"]) => {
+    setFilterSetting((oldValue) => {
+      return {
+        ...oldValue,
+        groups: name,
       };
     });
   };
@@ -76,36 +97,57 @@ const App = () => {
           setNotes={setNotes}
         />
       )}
+      <button onClick={() => handleChangeFilterSettingToGroups(null)}>
+        all
+      </button>
+      <button onClick={() => handleChangeFilterSettingToGroups("isFavorite")}>
+        избранное
+      </button>
+      <button onClick={() => handleChangeFilterSettingToGroups("isTrust")}>
+        удаленное
+      </button>
+
       <button onClick={() => setOpenDialog((openValue) => !openValue)}>
         открыть
       </button>
       <input value={searchValue} onChange={handleChangeSearchInput} />
       <div>
         <Tag
-          active={filterSetting.isBusiness}
+          active={filterSetting.tags.isBusiness}
           variant={"business"}
-          onClick={() => handleChangeFilterSetting("isBusiness")}
+          onClick={() => handleChangeFilterSettingToTags("isBusiness")}
         />
         <Tag
-          active={filterSetting.isShopping}
+          active={filterSetting.tags.isShopping}
           variant={"shopping"}
-          onClick={() => handleChangeFilterSetting("isShopping")}
+          onClick={() => handleChangeFilterSettingToTags("isShopping")}
         />
         <Tag
           variant={"all other"}
-          active={filterSetting.isOther}
-          onClick={() => handleChangeFilterSetting("isOther")}
+          active={filterSetting.tags.isOther}
+          onClick={() => handleChangeFilterSettingToTags("isOther")}
         />
       </div>
       <div>
-        {notes ? (
+        {notes.length ? (
           <ul>
             {notes
               .filter((item) => {
-                return filterByTags(item, filterSetting);
+                if (filterSetting.groups === "isTrust") {
+                  return item.groups.isTrust;
+                }
+                if (filterSetting.groups === "isFavorite") {
+                  return item.groups.isFavorite;
+                }
+                return true;
               })
               .filter((item) => {
-                return item.title.includes(searchValue);
+                return filterByTags(item, filterSetting.tags);
+              })
+              .filter((item) => {
+                return item.title
+                  .toLocaleLowerCase()
+                  .includes(searchValue.toLocaleLowerCase().trim());
               })
               .map((item) => {
                 return (
@@ -113,6 +155,8 @@ const App = () => {
                     onClick={() => handleToggleOpen(item)}
                     item={item}
                     onClickDeleteButton={() => deleteNote(item.id)}
+                    setNotes={setNotes}
+                    notes={notes}
                   />
                 );
               })}

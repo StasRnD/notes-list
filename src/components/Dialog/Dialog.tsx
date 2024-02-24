@@ -25,23 +25,26 @@ export const Dialog: React.FC<DialogProps> = ({
       listItemText: "",
     },
     onSubmit: ({ listItemText, ...itemInForm }) => {
+      /**
+       * id = 0, когда создаётся новый itemNote.
+       */
       if (itemInForm.id === 0) {
         itemInForm.id = notes.length + 1;
         updateNotes({ notes: [...notes, itemInForm], setNotes });
+        toggleOpen();
+        return;
       }
 
-      if (itemInForm.id === item.id) {
-        const notesForUpdate = notes.reduce(
-          (acc, noteItem) => {
-            if (noteItem.id === itemInForm.id) {
-              return [...acc, itemInForm];
-            }
-            return [...acc, noteItem];
-          },
-          [] as DialogProps["item"][],
-        );
-        updateNotes({ notes: notesForUpdate, setNotes });
-      }
+      const notesForUpdate = notes.reduce(
+        (acc, noteItem) => {
+          if (noteItem.id === itemInForm.id) {
+            return [...acc, itemInForm];
+          }
+          return [...acc, noteItem];
+        },
+        [] as DialogProps["notes"],
+      );
+      updateNotes({ notes: notesForUpdate, setNotes });
       toggleOpen();
     },
 
@@ -50,19 +53,19 @@ export const Dialog: React.FC<DialogProps> = ({
         .required("Поле обязательно для заполнения")
         .min(5, "не меньше 10 символов"),
 
-      description: Yup.string().min(5, "Не менбше 10 букв"),
+      description: Yup.string().min(10, "Не меньше 10 символов"),
       tags: Yup.object({
-        isBus: Yup.boolean(),
-        isShop: Yup.boolean(),
+        isBusiness: Yup.boolean(),
+        isShopping: Yup.boolean(),
         isOther: Yup.boolean(),
       }).test("validationTags", (obj) => {
-        return obj.isShop || obj.isBus || obj.isOther;
+        return obj.isBusiness || obj.isShopping || obj.isOther;
       }),
       listItemText: Yup.string().min(5, "минимум 5 букв"),
     }),
   });
 
-  const handleCheckboxChange = (name: keyof NoteItem["tags"]) => {
+  const handleTagsChange = (name: keyof NoteItem["tags"]) => {
     formik.setFieldValue(`tags.${name}`, !formik.values.tags[name]);
   };
 
@@ -109,7 +112,8 @@ export const Dialog: React.FC<DialogProps> = ({
             {formik.touched.description && formik.errors.description ? (
               <span className={"Error"}>{formik.errors.description}</span>
             ) : null}
-            <label className={"FormLabelContainer"}></label>
+          </label>
+          <label className={"FormLabelContainer"}>
             Список дел (не меньше 5 символов)
             <input
               placeholder={"Текст пункта"}
@@ -141,21 +145,21 @@ export const Dialog: React.FC<DialogProps> = ({
               className={"TagItem"}
               variant={"business"}
               active={formik.values.tags.isBusiness}
-              onClick={() => handleCheckboxChange("isBusiness")}
+              onClick={() => handleTagsChange("isBusiness")}
             />
 
             <Tag
               className={"TagItem"}
               variant={"shopping"}
               active={formik.values.tags.isShopping}
-              onClick={() => handleCheckboxChange("isShopping")}
+              onClick={() => handleTagsChange("isShopping")}
             />
 
             <Tag
               className={"TagItem"}
               variant={"all other"}
               active={formik.values.tags.isOther}
-              onClick={() => handleCheckboxChange("isOther")}
+              onClick={() => handleTagsChange("isOther")}
             />
 
             {formik.touched.tags && formik.errors.tags && (
