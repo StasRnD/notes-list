@@ -1,4 +1,4 @@
-export interface NoteItem {
+export interface NoteItemProps {
   title: string;
   description: string;
   tags: {
@@ -16,6 +16,6 @@ export interface NoteItem {
 }
 
 export type FilterSetting = {
-  tags: NoteItem["tags"];
-  groups: keyof NoteItem["groups"] | null;
+  tags: NoteItemProps["tags"];
+  groups: keyof NoteItemProps["groups"] | null;
 };

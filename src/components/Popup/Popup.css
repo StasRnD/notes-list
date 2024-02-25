@@ -1,4 +1,4 @@
-.DialogContainer {
+.PopupContainer {
     position: absolute;
     z-index: 1;
     width: 100%;
@@ -14,7 +14,7 @@
     height: 100%;
 }
 
-.Dialog {
+.Popup {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -28,7 +28,7 @@
 
 }
 
-.DialogForm {
+.PopupForm {
     display: flex;
     flex-direction: column;
     row-gap: 20px;

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
-import { Dialog } from "./components/Dialog/Dialog";
-import { NodeItem } from "./components/NoteItem/NodeItem";
+import { NoteItemComponent } from "./components/NoteItem/NoteItem";
 import { Tag } from "./components/Tag/Tag";
 import { filterByTags } from "./components/utils";
 import { updateNotes } from "./utils";
-import { NoteItem, FilterSetting } from "./components/types";
+import { NoteItemProps, FilterSetting } from "./types";
+import { Popup } from "./components/Popup/Popup";
 
-const initialItemForForm: NoteItem = {
+const initialDataForm: NoteItemProps = {
   title: "",
   description: "",
   tags: {
@@ -31,12 +31,12 @@ const initialFilter: FilterSetting = {
 
 const App = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [itemForForm, setItemForForm] = useState<NoteItem>(initialItemForForm);
+  const [dataForm, setDataForm] = useState<NoteItemProps>(initialDataForm);
   const [searchValue, setSearchValue] = useState<string>("");
   const [filterSetting, setFilterSetting] =
     useState<FilterSetting>(initialFilter);
 
-  const [notes, setNotes] = useState<NoteItem[]>([]);
+  const [notes, setNotes] = useState<NoteItemProps[]>([]);
 
   useEffect(() => {
     const json = localStorage.getItem("notes");
@@ -45,8 +45,8 @@ const App = () => {
     }
   }, []);
 
-  const handleToggleOpen = (item: NoteItem) => {
-    setItemForForm(() => item);
+  const handleToggleOpenPopup = (item: NoteItemProps) => {
+    setDataForm(() => item);
     setOpenDialog((openValue) => !openValue);
   };
 
@@ -87,83 +87,111 @@ const App = () => {
     updateNotes({ notes: newArray, setNotes });
   };
 
+  const filterNotes = () => {
+    return (
+      <ul className={"NotesList"}>
+        {notes
+          .filter((item) => {
+            if (filterSetting.groups === "isTrust") {
+              return item.groups.isTrust;
+            }
+            if (filterSetting.groups === "isFavorite") {
+              return item.groups.isFavorite;
+            }
+            return true;
+          })
+          .filter((item) => {
+            return filterByTags(item, filterSetting.tags);
+          })
+          .filter((item) => {
+            return item.title
+              .toLocaleLowerCase()
+              .includes(searchValue.toLocaleLowerCase().trim());
+          })
+          .map((item) => {
+            return (
+              <NoteItemComponent
+                onClick={() => handleToggleOpenPopup(item)}
+                item={item}
+                deleteNoteItem={() => deleteNote(item.id)}
+                setNotes={setNotes}
+                notes={notes}
+              />
+            );
+          })}
+      </ul>
+    );
+  };
+
   return (
     <div className="App">
       {openDialog && (
-        <Dialog
-          toggleOpen={() => handleToggleOpen(initialItemForForm)}
-          item={itemForForm}
+        <Popup
+          closePopup={() => handleToggleOpenPopup(initialDataForm)}
+          item={dataForm}
           notes={notes}
           setNotes={setNotes}
         />
       )}
-      <button onClick={() => handleChangeFilterSettingToGroups(null)}>
-        all
-      </button>
-      <button onClick={() => handleChangeFilterSettingToGroups("isFavorite")}>
-        избранное
-      </button>
-      <button onClick={() => handleChangeFilterSettingToGroups("isTrust")}>
-        удаленное
-      </button>
+      <div className={"Page"}>
+        <div className={"SearchAndGroupWrapper"}>
+          <input
+            className={"SearchInput"}
+            value={searchValue}
+            onChange={handleChangeSearchInput}
+            placeholder={"Поиск..."}
+          />
 
-      <button onClick={() => setOpenDialog((openValue) => !openValue)}>
-        открыть
-      </button>
-      <input value={searchValue} onChange={handleChangeSearchInput} />
-      <div>
-        <Tag
-          active={filterSetting.tags.isBusiness}
-          variant={"business"}
-          onClick={() => handleChangeFilterSettingToTags("isBusiness")}
-        />
-        <Tag
-          active={filterSetting.tags.isShopping}
-          variant={"shopping"}
-          onClick={() => handleChangeFilterSettingToTags("isShopping")}
-        />
-        <Tag
-          variant={"all other"}
-          active={filterSetting.tags.isOther}
-          onClick={() => handleChangeFilterSettingToTags("isOther")}
-        />
-      </div>
-      <div>
-        {notes.length ? (
-          <ul>
-            {notes
-              .filter((item) => {
-                if (filterSetting.groups === "isTrust") {
-                  return item.groups.isTrust;
-                }
-                if (filterSetting.groups === "isFavorite") {
-                  return item.groups.isFavorite;
-                }
-                return true;
-              })
-              .filter((item) => {
-                return filterByTags(item, filterSetting.tags);
-              })
-              .filter((item) => {
-                return item.title
-                  .toLocaleLowerCase()
-                  .includes(searchValue.toLocaleLowerCase().trim());
-              })
-              .map((item) => {
-                return (
-                  <NodeItem
-                    onClick={() => handleToggleOpen(item)}
-                    item={item}
-                    onClickDeleteButton={() => deleteNote(item.id)}
-                    setNotes={setNotes}
-                    notes={notes}
-                  />
-                );
-              })}
-          </ul>
-        ) : (
-          <span>Ничего не добавлено</span>
-        )}
+          <button
+            className={`GroupItem ${filterSetting.groups === null ? "ActiveGroupItem" : ""}`}
+            onClick={() => handleChangeFilterSettingToGroups(null)}
+          >
+            Все заметки
+          </button>
+          <button
+            className={`GroupItem ${filterSetting.groups === "isFavorite" ? "ActiveGroupItem" : ""}`}
+            onClick={() => handleChangeFilterSettingToGroups("isFavorite")}
+          >
+            Избранное
+          </button>
+          <button
+            className={`GroupItem ${filterSetting.groups === "isTrust" ? "ActiveGroupItem" : ""}`}
+            onClick={() => handleChangeFilterSettingToGroups("isTrust")}
+          >
+            Корзина
+          </button>
+        </div>
+        <div className={"NotesListWrapper"}>
+          <div className={"InteractiveElementWrapper"}>
+            <button
+              className={"AddNoteButton"}
+              onClick={() => setOpenDialog((openValue) => !openValue)}
+            >
+              Добавить
+            </button>
+
+            <div className={"TagsContainer"}>
+              <Tag
+                active={filterSetting.tags.isBusiness}
+                variant={"business"}
+                onClick={() => handleChangeFilterSettingToTags("isBusiness")}
+              />
+              <Tag
+                active={filterSetting.tags.isShopping}
+                variant={"shopping"}
+                onClick={() => handleChangeFilterSettingToTags("isShopping")}
+              />
+              <Tag
+                variant={"all other"}
+                active={filterSetting.tags.isOther}
+                onClick={() => handleChangeFilterSettingToTags("isOther")}
+              />
+            </div>
+          </div>
+          <div>
+            {notes.length ? filterNotes() : <span>Ничего не добавлено</span>}
+          </div>
+        </div>
       </div>
     </div>
   );

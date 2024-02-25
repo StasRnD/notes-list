@@ -1,7 +1,7 @@
 @import 'App.css';
-@import "components/Dialog/Dialog.css";
+@import "components/Popup/Popup.css";
 @import "components/Tag/Tag.css";
-@import "components/NoteItem/NodeItem.css";
+@import "components/NoteItem/NoteItem.css";
 
 body {
   margin: 0;
@@ -15,6 +15,7 @@ body {
 button {
   all: unset;
 }
+
 
 
 input {
@@ -52,9 +53,7 @@ button:hover:not(:disabled) {
   opacity: .7;
 }
 
-button:focus {
-  outline: 2px solid #2355a2;
-}
+
 
 input:hover {
   border: 1px solid #49bdbd;

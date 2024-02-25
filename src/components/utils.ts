@@ -1,8 +1,8 @@
-import { NoteItem } from "./types";
+import { NoteItemProps } from "../types";
 
 export const filterByTags = (
-  item: NoteItem,
-  filterSetting: NoteItem["tags"],
+  item: NoteItemProps,
+  filterSetting: NoteItemProps["tags"],
 ) => {
   if (Object.values(filterSetting).every((value) => !Boolean(value))) {
     return true;

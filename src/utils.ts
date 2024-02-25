@@ -1,9 +1,9 @@
-import { NoteItem } from "./components/types";
+import { NoteItemProps } from "./types";
 import React from "react";
 
 interface UpdateNotesProps {
-  setNotes: React.Dispatch<React.SetStateAction<NoteItem[]>>;
-  notes: NoteItem[];
+  setNotes: React.Dispatch<React.SetStateAction<NoteItemProps[]>>;
+  notes: NoteItemProps[];
 }
 
 export const updateNotes = ({ notes, setNotes }: UpdateNotesProps) => {

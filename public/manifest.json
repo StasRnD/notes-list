@@ -8,14 +8,24 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "close.svg",
+      "type": "image/svg",
+      "sizes": "20x20"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "basket.svg",
+      "type": "image/svg",
+      "sizes": "20x20"
+    },
+    {
+      "src": "favorite.svg",
+      "type": "image/svg",
+      "sizes": "20x20"
+    },
+    {
+      "src": "search.svg",
+      "type": "image/svg",
+      "sizes": "20x20"
     }
   ],
   "start_url": ".",

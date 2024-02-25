@@ -2,4 +2,74 @@
     position: relative;
     width: 100vw;
     height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding-top: 150px;
+    box-sizing: border-box;
+
+}
+
+.Page {
+    display: flex;
+}
+
+.SearchAndGroupWrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: bisque;
+    height: min-content;
+}
+
+
+.SearchInput {
+    margin: 20px 10px;
+
+}
+
+
+.GroupItem {
+    border-radius: 0;
+    color: black;
+    background-color: #b9f0df;
+    border-top: 1px solid lightblue;
+    border-left: 5px solid transparent;
+}
+
+.ActiveGroupItem {
+    border-left: 5px solid #47c9a2;
+}
+
+
+.NotesListWrapper {
+    min-width: 500px;
+    height: fit-content;
+    padding: 20px;
+    background-color: lightblue;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+.InteractiveElementWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.TagsContainer {
+    display: flex;
+    column-gap: 10px;
+}
+
+.NotesList {
+     display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    padding: 0;
+}
+
+.AddNoteButton {
+    padding: 5px 10px;
 }

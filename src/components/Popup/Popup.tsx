@@ -4,22 +4,22 @@ import * as Yup from "yup";
 import { Tag } from "../Tag/Tag";
 import isEqual from "lodash/isEqual";
 import { updateNotes } from "../../utils";
-import { NoteItem } from "../types";
+import { NoteItemProps } from "../../types";
 
-interface DialogProps {
-  toggleOpen: VoidFunction;
-  item: NoteItem;
-  notes: NoteItem[];
-  setNotes: React.Dispatch<React.SetStateAction<NoteItem[]>>;
+interface PopupProps {
+  closePopup: VoidFunction;
+  item: NoteItemProps;
+  notes: NoteItemProps[];
+  setNotes: React.Dispatch<React.SetStateAction<NoteItemProps[]>>;
 }
 
-export const Dialog: React.FC<DialogProps> = ({
-  toggleOpen,
+export const Popup: React.FC<PopupProps> = ({
+  closePopup,
   item,
   notes,
   setNotes,
 }) => {
-  const formik = useFormik<NoteItem & { listItemText: string }>({
+  const formik = useFormik<NoteItemProps & { listItemText: string }>({
     initialValues: {
       ...item,
       listItemText: "",
@@ -31,7 +31,7 @@ export const Dialog: React.FC<DialogProps> = ({
       if (itemInForm.id === 0) {
         itemInForm.id = notes.length + 1;
         updateNotes({ notes: [...notes, itemInForm], setNotes });
-        toggleOpen();
+        closePopup();
         return;
       }
 
@@ -42,10 +42,10 @@ export const Dialog: React.FC<DialogProps> = ({
           }
           return [...acc, noteItem];
         },
-        [] as DialogProps["notes"],
+        [] as PopupProps["notes"],
       );
       updateNotes({ notes: notesForUpdate, setNotes });
-      toggleOpen();
+      closePopup();
     },
 
     validationSchema: Yup.object({
@@ -65,7 +65,7 @@ export const Dialog: React.FC<DialogProps> = ({
     }),
   });
 
-  const handleTagsChange = (name: keyof NoteItem["tags"]) => {
+  const handleTagsChange = (name: keyof NoteItemProps["tags"]) => {
     formik.setFieldValue(`tags.${name}`, !formik.values.tags[name]);
   };
 
@@ -78,14 +78,10 @@ export const Dialog: React.FC<DialogProps> = ({
   };
 
   return (
-    <div className={"DialogContainer"}>
+    <div className={"PopupContainer"}>
       <div className={"Overlay"}></div>
-      <div className={"Dialog"}>
-        <form
-          className={"DialogForm"}
-          onSubmit={formik.handleSubmit}
-          noValidate
-        >
+      <div className={"Popup"}>
+        <form className={"PopupForm"} onSubmit={formik.handleSubmit} noValidate>
           <label className={"FormLabelContainer"}>
             Заголовок
             <input
