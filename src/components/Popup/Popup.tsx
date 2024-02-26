@@ -8,7 +8,6 @@ import { NoteItemProps } from "../../types";
 import { useOutsideClickPopup } from "../../hooks";
 
 interface PopupProps {
-  open: boolean;
   closePopup: VoidFunction;
   item: NoteItemProps;
   notes: NoteItemProps[];
@@ -17,7 +16,6 @@ interface PopupProps {
 
 export const Popup: React.FC<PopupProps> = ({
   closePopup,
-  open,
   item,
   notes,
   setNotes,

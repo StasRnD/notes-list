@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./index.css";
 import { NoteItemComponent } from "./components/NoteItem/NoteItem";
 import { Tag } from "./components/Tag/Tag";
-import { filterByTags } from "./components/utils";
-import { updateNotes } from "./utils";
+import { updateNotes, filterByTags } from "./utils";
 import { NoteItemProps, FilterSetting } from "./types";
 import { Popup } from "./components/Popup/Popup";
 
@@ -135,7 +134,6 @@ const App = () => {
     <div className="App">
       {openPopup && (
         <Popup
-          open={openPopup}
           closePopup={() => handleToggleOpenPopup(initialDataForm)}
           item={dataForm}
           notes={notes}
