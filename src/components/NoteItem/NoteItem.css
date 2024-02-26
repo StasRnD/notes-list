@@ -8,10 +8,12 @@
     border-radius: 10px;
     width: 100%;
     box-sizing: border-box;
-
 }
 
-
+.NoteItem:hover {
+   cursor: pointer;
+    background-color: lightgoldenrodyellow;
+}
 
 .HeaderAndActionElement {
     display: flex;

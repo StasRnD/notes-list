@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Tag } from "../Tag/Tag";
 import isEqual from "lodash/isEqual";
 import { updateNotes } from "../../utils";
 import { NoteItemProps } from "../../types";
+import { useOutsideClickPopup } from "../../hooks";
 
 interface PopupProps {
+  open: boolean;
   closePopup: VoidFunction;
   item: NoteItemProps;
   notes: NoteItemProps[];
@@ -15,10 +17,16 @@ interface PopupProps {
 
 export const Popup: React.FC<PopupProps> = ({
   closePopup,
+  open,
   item,
   notes,
   setNotes,
 }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Элемент для навешивание события клика вне Popup
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const formik = useFormik<NoteItemProps & { listItemText: string }>({
     initialValues: {
       ...item,
@@ -77,10 +85,12 @@ export const Popup: React.FC<PopupProps> = ({
     formik.setFieldValue(`listItemText`, "");
   };
 
+  useOutsideClickPopup(ref, containerRef, closePopup);
+
   return (
-    <div className={"PopupContainer"}>
+    <div className={"PopupContainer"} ref={containerRef}>
       <div className={"Overlay"}></div>
-      <div className={"Popup"}>
+      <div className={"Popup"} ref={ref}>
         <form className={"PopupForm"} onSubmit={formik.handleSubmit} noValidate>
           <label className={"FormLabelContainer"}>
             Заголовок
@@ -139,21 +149,24 @@ export const Popup: React.FC<PopupProps> = ({
           <div className={"TagContainer"}>
             <Tag
               className={"TagItem"}
-              variant={"business"}
+              styleVariant={"business"}
+              text={"business"}
               active={formik.values.tags.isBusiness}
               onClick={() => handleTagsChange("isBusiness")}
             />
 
             <Tag
               className={"TagItem"}
-              variant={"shopping"}
+              styleVariant={"shopping"}
+              text={"shopping"}
               active={formik.values.tags.isShopping}
               onClick={() => handleTagsChange("isShopping")}
             />
 
             <Tag
               className={"TagItem"}
-              variant={"all other"}
+              styleVariant={"other"}
+              text={"other things"}
               active={formik.values.tags.isOther}
               onClick={() => handleTagsChange("isOther")}
             />

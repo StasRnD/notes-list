@@ -30,7 +30,7 @@ const initialFilter: FilterSetting = {
 };
 
 const App = () => {
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [dataForm, setDataForm] = useState<NoteItemProps>(initialDataForm);
   const [searchValue, setSearchValue] = useState<string>("");
   const [filterSetting, setFilterSetting] =
@@ -38,16 +38,12 @@ const App = () => {
 
   const [notes, setNotes] = useState<NoteItemProps[]>([]);
 
-  useEffect(() => {
-    const json = localStorage.getItem("notes");
-    if (json !== null) {
-      updateNotes({ notes: JSON.parse(json), setNotes });
+  const handleToggleOpenPopup = (item?: NoteItemProps) => {
+    if (item) {
+      setDataForm(() => item);
     }
-  }, []);
 
-  const handleToggleOpenPopup = (item: NoteItemProps) => {
-    setDataForm(() => item);
-    setOpenDialog((openValue) => !openValue);
+    setOpenPopup((openValue) => !openValue);
   };
 
   const handleChangeFilterSettingToTags = (
@@ -87,28 +83,30 @@ const App = () => {
     updateNotes({ notes: newArray, setNotes });
   };
 
-  const filterNotes = () => {
+  const getFilterNotes = () => {
+    const filterNotes = notes
+      .filter((item) => {
+        if (filterSetting.groups === "isTrust") {
+          return item.groups.isTrust;
+        }
+        if (filterSetting.groups === "isFavorite") {
+          return item.groups.isFavorite;
+        }
+        return true;
+      })
+      .filter((item) => {
+        return filterByTags(item, filterSetting.tags);
+      })
+      .filter((item) => {
+        return item.title
+          .toLocaleLowerCase()
+          .includes(searchValue.toLocaleLowerCase().trim());
+      });
+
     return (
       <ul className={"NotesList"}>
-        {notes
-          .filter((item) => {
-            if (filterSetting.groups === "isTrust") {
-              return item.groups.isTrust;
-            }
-            if (filterSetting.groups === "isFavorite") {
-              return item.groups.isFavorite;
-            }
-            return true;
-          })
-          .filter((item) => {
-            return filterByTags(item, filterSetting.tags);
-          })
-          .filter((item) => {
-            return item.title
-              .toLocaleLowerCase()
-              .includes(searchValue.toLocaleLowerCase().trim());
-          })
-          .map((item) => {
+        {filterNotes.length > 0 ? (
+          filterNotes.map((item) => {
             return (
               <NoteItemComponent
                 onClick={() => handleToggleOpenPopup(item)}
@@ -118,15 +116,26 @@ const App = () => {
                 notes={notes}
               />
             );
-          })}
+          })
+        ) : (
+          <span>ничего не найдено</span>
+        )}
       </ul>
     );
   };
 
+  useEffect(() => {
+    const json = localStorage.getItem("notes");
+    if (json !== null) {
+      updateNotes({ notes: JSON.parse(json), setNotes });
+    }
+  }, []);
+
   return (
     <div className="App">
-      {openDialog && (
+      {openPopup && (
         <Popup
+          open={openPopup}
           closePopup={() => handleToggleOpenPopup(initialDataForm)}
           item={dataForm}
           notes={notes}
@@ -165,7 +174,7 @@ const App = () => {
           <div className={"InteractiveElementWrapper"}>
             <button
               className={"AddNoteButton"}
-              onClick={() => setOpenDialog((openValue) => !openValue)}
+              onClick={() => handleToggleOpenPopup()}
             >
               Добавить
             </button>
@@ -173,23 +182,26 @@ const App = () => {
             <div className={"TagsContainer"}>
               <Tag
                 active={filterSetting.tags.isBusiness}
-                variant={"business"}
+                styleVariant={"business"}
+                text={"business"}
                 onClick={() => handleChangeFilterSettingToTags("isBusiness")}
               />
               <Tag
                 active={filterSetting.tags.isShopping}
-                variant={"shopping"}
+                styleVariant={"shopping"}
+                text={"shopping"}
                 onClick={() => handleChangeFilterSettingToTags("isShopping")}
               />
               <Tag
-                variant={"all other"}
+                styleVariant={"other"}
+                text={"other things"}
                 active={filterSetting.tags.isOther}
                 onClick={() => handleChangeFilterSettingToTags("isOther")}
               />
             </div>
           </div>
           <div>
-            {notes.length ? filterNotes() : <span>Ничего не добавлено</span>}
+            {notes.length ? getFilterNotes() : <span>Ничего не добавлено</span>}
           </div>
         </div>
       </div>
