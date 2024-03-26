@@ -2,6 +2,7 @@
 @import "components/Popup/Popup.css";
 @import "components/Tag/Tag.css";
 @import "components/NoteItem/NoteItem.css";
+@import "components/NoteForm/NoteForm.css";
 
 body {
   margin: 0;

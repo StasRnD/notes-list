@@ -1,6 +1,7 @@
 import React from "react";
 import { NoteItemProps } from "../../types";
 import { updateNotes } from "../../utils";
+import { produce } from "immer";
 
 interface NoteItemComponentProps {
   item: NoteItemProps;
@@ -20,22 +21,22 @@ export const NoteItemComponent: React.FC<NoteItemComponentProps> = ({
   const { title, description, list } = item;
 
   const updateGroupInItem = (name: keyof NoteItemProps["groups"]) => {
-    const updateItem = {
-      ...item,
-      groups: {
-        ...item.groups,
-        [name]: !item.groups[name],
-      },
-    };
-
-    const notesWithUpdateItem = notes.map((note) => {
-      if (note.id === item.id) {
-        return updateItem;
-      }
-      return note;
+    const nextState = produce(notes, (draftState) => {
+      draftState[item.id - 1].groups[name] = !item.groups[name];
     });
+    updateNotes({ notes: nextState, setNotes });
+  };
 
-    updateNotes({ notes: notesWithUpdateItem, setNotes });
+  const handleDeleteNote = (
+    event: React.MouseEvent<HTMLImageElement>,
+    name: keyof NoteItemProps["groups"],
+  ) => {
+    event.stopPropagation();
+    if (name === "isTrust" && item.groups.isTrust) {
+      deleteNoteItem();
+      return;
+    }
+    updateGroupInItem(name);
   };
 
   return (
@@ -47,23 +48,15 @@ export const NoteItemComponent: React.FC<NoteItemComponentProps> = ({
             src={"basket.svg"}
             className={`ActionImage ${item.groups.isTrust ? "ActiveImage" : ""}`}
             alt={"Корзина"}
-            onClick={(evt: React.MouseEvent<HTMLImageElement>) => {
-              evt.stopPropagation();
-              if (item.groups.isTrust) {
-                deleteNoteItem();
-                return;
-              }
-              updateGroupInItem("isTrust");
-            }}
+            onClick={(event) => handleDeleteNote(event, "isTrust")}
           />
           <img
             src={"favorite.svg"}
             className={`ActionImage ${item.groups.isFavorite ? "ActiveImage" : ""}`}
             alt={"Избранное"}
-            onClick={(evt: React.MouseEvent<HTMLImageElement>) => {
-              evt.stopPropagation();
-              updateGroupInItem("isFavorite");
-            }}
+            onClick={(event: React.MouseEvent<HTMLImageElement>) =>
+              handleDeleteNote(event, "isFavorite")
+            }
           />
         </div>
       </div>

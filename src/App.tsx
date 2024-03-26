@@ -5,6 +5,7 @@ import { Tag } from "./components/Tag/Tag";
 import { updateNotes, filterByTags } from "./utils";
 import { NoteItemProps, FilterSetting } from "./types";
 import { Popup } from "./components/Popup/Popup";
+import { NoteForm } from "./components/NoteForm/NoteForm";
 
 const initialDataForm: NoteItemProps = {
   title: "",
@@ -28,6 +29,12 @@ const initialFilter: FilterSetting = {
   groups: null,
 };
 
+const initialNotes: NoteItemProps[] = JSON.parse(
+  localStorage.getItem("notes") || `[]`,
+);
+
+const allTags: any = JSON.parse(localStorage.getItem("tags") || `[]`);
+
 const App = () => {
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [dataForm, setDataForm] = useState<NoteItemProps>(initialDataForm);
@@ -35,8 +42,7 @@ const App = () => {
   const [filterSetting, setFilterSetting] =
     useState<FilterSetting>(initialFilter);
 
-  const [notes, setNotes] = useState<NoteItemProps[]>([]);
-
+  const [notes, setNotes] = useState<NoteItemProps[]>(initialNotes);
   const handleToggleOpenPopup = (item?: NoteItemProps) => {
     if (item) {
       setDataForm(() => item);
@@ -89,15 +95,15 @@ const App = () => {
           return item.groups.isTrust;
         }
         if (filterSetting.groups === "isFavorite") {
-          return item.groups.isFavorite;
+          return item.groups.isFavorite && !item.groups.isTrust;
         }
-        return true;
+        return !item.groups.isTrust;
       })
       .filter((item) => {
         return filterByTags(item, filterSetting.tags);
       })
       .filter((item) => {
-        return item.title
+        return (item.title + item.description + item.list.join(""))
           .toLocaleLowerCase()
           .includes(searchValue.toLocaleLowerCase().trim());
       });
@@ -123,22 +129,20 @@ const App = () => {
     );
   };
 
-  useEffect(() => {
-    const json = localStorage.getItem("notes");
-    if (json !== null) {
-      updateNotes({ notes: JSON.parse(json), setNotes });
-    }
-  }, []);
-
   return (
     <div className="App">
       {openPopup && (
         <Popup
+          title={dataForm.id === 0 ? "Создание" : "Редактирование"}
           closePopup={() => handleToggleOpenPopup(initialDataForm)}
-          item={dataForm}
-          notes={notes}
-          setNotes={setNotes}
-        />
+        >
+          <NoteForm
+            item={dataForm}
+            notes={notes}
+            setNotes={setNotes}
+            closePopup={() => handleToggleOpenPopup(initialDataForm)}
+          />
+        </Popup>
       )}
       <div className={"Page"}>
         <div className={"SearchAndGroupWrapper"}>
