@@ -3,7 +3,7 @@ import isEqual from "lodash/isEqual";
 import React from "react";
 import { useFormik } from "formik";
 import { NoteItemProps, TagProps } from "../../types";
-import { addTags, updateNotes } from "../../utils";
+import { updateNotes } from "../../utils";
 import { produce } from "immer";
 import * as Yup from "yup";
 
@@ -13,7 +13,7 @@ interface NoteFormProps {
   setNotes: React.Dispatch<React.SetStateAction<NoteItemProps[]>>;
   closePopup: VoidFunction;
   tags: TagProps[];
-  setTags: React.Dispatch<React.SetStateAction<TagProps[]>>;
+  handleOpenAddTagForm: VoidFunction;
 }
 
 export const NoteForm: React.FC<NoteFormProps> = ({
@@ -22,7 +22,7 @@ export const NoteForm: React.FC<NoteFormProps> = ({
   setNotes,
   closePopup,
   tags,
-  setTags,
+  handleOpenAddTagForm,
 }) => {
   const formik = useFormik<NoteItemProps & { listItemText: string }>({
     initialValues: {
@@ -136,20 +136,7 @@ export const NoteForm: React.FC<NoteFormProps> = ({
       >
         Добавить пункт
       </button>
-      <button
-        type={"button"}
-        onClick={() => {
-          if (tags.map((tag) => tag.text).includes("mother")) {
-            return;
-          }
-          addTags({
-            tags: [...tags, { text: "mother", color: "green" }],
-            setTags,
-          });
-        }}
-      >
-        добавить тег
-      </button>
+
       <div className={"TagContainer"}>
         {tags.map((tag) => {
           return (
@@ -165,6 +152,9 @@ export const NoteForm: React.FC<NoteFormProps> = ({
         {formik.touched.tags && formik.errors.tags && (
           <span className={"Error"}>Необходимо выбрать хотя бы один тег</span>
         )}
+        <button type={"button"} onClick={handleOpenAddTagForm}>
+          Добавить тег
+        </button>
       </div>
       <button disabled={isEqual({ ...item, listItemText: "" }, formik.values)}>
         Отправить

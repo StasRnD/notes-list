@@ -1,0 +1,20 @@
+.AddTagForm {
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+}
+
+.FormLabelContainer {
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+}
+
+
+.Error {
+    font-size: 10px;
+    color: red;
+    line-height: 14px;
+    width: 100%;
+    flex-grow: 2;
+}

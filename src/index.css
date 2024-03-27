@@ -3,6 +3,7 @@
 @import "components/Tag/Tag.css";
 @import "components/NoteItem/NoteItem.css";
 @import "components/NoteForm/NoteForm.css";
+@import "components/AddTagForm/AddTagForm.css";
 
 body {
   margin: 0;
@@ -13,9 +14,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-button {
-  all: unset;
-}
 
 
 
@@ -31,10 +29,19 @@ input {
 
 }
 
+input[type="color"] {
+  padding: 0;
+}
+
+input[type="color" i]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
 ul {
   margin: 0;
 }
 button {
+  all: unset;
   padding: 10px;
   text-align: center;
   font-size: 14px;

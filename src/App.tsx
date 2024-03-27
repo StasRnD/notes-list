@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./index.css";
 import { NoteItemComponent } from "./components/NoteItem/NoteItem";
 import { Tag } from "./components/Tag/Tag";
@@ -6,6 +6,8 @@ import { updateNotes, filterByTags } from "./utils";
 import { NoteItemProps, FilterSetting, TagProps } from "./types";
 import { Popup } from "./components/Popup/Popup";
 import { NoteForm } from "./components/NoteForm/NoteForm";
+import { AddTagForm } from "./components/AddTagForm/AddTagForm";
+import { produce } from "immer";
 
 const initialDataForm: NoteItemProps = {
   title: "",
@@ -31,7 +33,7 @@ const initialTags: TagProps[] = JSON.parse(
   localStorage.getItem("tags") || globalInitialTagsJson,
 );
 
-const getInitialFilterTags = initialTags.reduce(
+const initialFilterTags = initialTags.reduce(
   (acc, tag) => {
     return { ...acc, [tag.text]: false };
   },
@@ -39,12 +41,15 @@ const getInitialFilterTags = initialTags.reduce(
 );
 
 const initialFilter: FilterSetting = {
-  tags: getInitialFilterTags,
+  tags: initialFilterTags,
   groups: null,
 };
 
 const App = () => {
-  const [openPopup, setOpenPopup] = useState<boolean>(false);
+  const [openPopupWithNoteForm, setOpenPopupWithNoteForm] =
+    useState<boolean>(false);
+  const [openPopupWithAddTagForm, setOpenPopupWithAddTagForm] =
+    useState<boolean>(false);
   const [dataForm, setDataForm] = useState<NoteItemProps>(initialDataForm);
   const [searchValue, setSearchValue] = useState<string>("");
   const [filterSetting, setFilterSetting] =
@@ -56,21 +61,20 @@ const App = () => {
       setDataForm(() => item);
     }
 
-    setOpenPopup((openValue) => !openValue);
+    setOpenPopupWithNoteForm((openValue) => !openValue);
+  };
+
+  const handleToggleOpenPopupWithAddForm = () => {
+    setOpenPopupWithAddTagForm((openValue) => !openValue);
   };
 
   const handleChangeFilterSettingToTags = (
     name: keyof FilterSetting["tags"],
   ) => {
-    setFilterSetting((oldValue) => {
-      return {
-        ...oldValue,
-        tags: {
-          ...oldValue.tags,
-          [name]: !oldValue.tags[name],
-        },
-      };
+    const updateFilterSetting = produce(filterSetting, (draftState) => {
+      draftState.tags[name] = !filterSetting.tags[name];
     });
+    setFilterSetting(updateFilterSetting);
   };
 
   const handleChangeFilterSettingToGroups = (name: FilterSetting["groups"]) => {
@@ -139,7 +143,7 @@ const App = () => {
 
   return (
     <div className="App">
-      {openPopup && (
+      {openPopupWithNoteForm && (
         <Popup
           title={dataForm.id === 0 ? "Создание" : "Редактирование"}
           closePopup={() => handleToggleOpenPopup(initialDataForm)}
@@ -150,10 +154,23 @@ const App = () => {
             setNotes={setNotes}
             closePopup={() => handleToggleOpenPopup(initialDataForm)}
             tags={tags}
+            handleOpenAddTagForm={handleToggleOpenPopupWithAddForm}
+          />
+        </Popup>
+      )}
+      {openPopupWithAddTagForm && (
+        <Popup
+          title={"Добавить тег"}
+          closePopup={handleToggleOpenPopupWithAddForm}
+        >
+          <AddTagForm
+            tags={tags}
+            toggleOpenPopupWithAddForm={handleToggleOpenPopupWithAddForm}
             setTags={setTags}
           />
         </Popup>
       )}
+
       <div className={"Page"}>
         <div className={"SearchAndGroupWrapper"}>
           <input
