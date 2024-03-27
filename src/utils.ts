@@ -1,4 +1,4 @@
-import { NoteItemProps } from "./types";
+import { NoteItemProps, TagProps } from "./types";
 import React from "react";
 
 interface UpdateNotesProps {
@@ -6,9 +6,19 @@ interface UpdateNotesProps {
   notes: NoteItemProps[];
 }
 
+interface AddTagsProps {
+  setTags: React.Dispatch<React.SetStateAction<TagProps[]>>;
+  tags: TagProps[];
+}
+
 export const updateNotes = ({ notes, setNotes }: UpdateNotesProps) => {
   setNotes(notes);
   localStorage.setItem("notes", JSON.stringify(notes, null, 1));
+};
+
+export const addTags = ({ tags, setTags }: AddTagsProps) => {
+  setTags(tags);
+  localStorage.setItem("tags", JSON.stringify(tags, null, 1));
 };
 
 export const filterByTags = (
@@ -18,9 +28,7 @@ export const filterByTags = (
   if (Object.values(filterSetting).every((value) => !Boolean(value))) {
     return true;
   }
-  return (
-    (item.tags.isBusiness && filterSetting.isBusiness) ||
-    (item.tags.isShopping && filterSetting.isShopping) ||
-    (item.tags.isOther && filterSetting.isOther)
-  );
+  const x = Object.keys(filterSetting).filter((el) => filterSetting[el]);
+
+  return x.some((el) => item.tags[el]);
 };

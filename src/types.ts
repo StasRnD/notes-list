@@ -2,9 +2,7 @@ export interface NoteItemProps {
   title: string;
   description: string;
   tags: {
-    isBusiness: boolean;
-    isShopping: boolean;
-    isOther: boolean;
+    [key: string]: boolean;
   };
 
   list: string[];
@@ -13,6 +11,11 @@ export interface NoteItemProps {
     isFavorite: boolean;
     isTrust: boolean;
   };
+}
+
+export interface TagProps {
+  text: string;
+  color: string;
 }
 
 export type FilterSetting = {

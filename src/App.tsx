@@ -3,18 +3,14 @@ import "./index.css";
 import { NoteItemComponent } from "./components/NoteItem/NoteItem";
 import { Tag } from "./components/Tag/Tag";
 import { updateNotes, filterByTags } from "./utils";
-import { NoteItemProps, FilterSetting } from "./types";
+import { NoteItemProps, FilterSetting, TagProps } from "./types";
 import { Popup } from "./components/Popup/Popup";
 import { NoteForm } from "./components/NoteForm/NoteForm";
 
 const initialDataForm: NoteItemProps = {
   title: "",
   description: "",
-  tags: {
-    isBusiness: false,
-    isShopping: false,
-    isOther: false,
-  },
+  tags: {},
   groups: {
     isFavorite: false,
     isTrust: false,
@@ -24,16 +20,28 @@ const initialDataForm: NoteItemProps = {
   id: 0,
 };
 
-const initialFilter: FilterSetting = {
-  tags: { isBusiness: false, isShopping: false, isOther: false },
-  groups: null,
-};
-
 const initialNotes: NoteItemProps[] = JSON.parse(
   localStorage.getItem("notes") || `[]`,
 );
 
-const allTags: any = JSON.parse(localStorage.getItem("tags") || `[]`);
+const globalInitialTagsJson =
+  '[{"text":"shopping","color":"#a171d2"},{"text":"business","color":"#e088d2"},{"text":"all other","color":"#eeaa79"}]';
+
+const initialTags: TagProps[] = JSON.parse(
+  localStorage.getItem("tags") || globalInitialTagsJson,
+);
+
+const getInitialFilterTags = initialTags.reduce(
+  (acc, tag) => {
+    return { ...acc, [tag.text]: false };
+  },
+  {} as NoteItemProps["tags"],
+);
+
+const initialFilter: FilterSetting = {
+  tags: getInitialFilterTags,
+  groups: null,
+};
 
 const App = () => {
   const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -41,8 +49,8 @@ const App = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [filterSetting, setFilterSetting] =
     useState<FilterSetting>(initialFilter);
-
   const [notes, setNotes] = useState<NoteItemProps[]>(initialNotes);
+  const [tags, setTags] = useState<TagProps[]>(initialTags);
   const handleToggleOpenPopup = (item?: NoteItemProps) => {
     if (item) {
       setDataForm(() => item);
@@ -141,6 +149,8 @@ const App = () => {
             notes={notes}
             setNotes={setNotes}
             closePopup={() => handleToggleOpenPopup(initialDataForm)}
+            tags={tags}
+            setTags={setTags}
           />
         </Popup>
       )}
@@ -182,24 +192,16 @@ const App = () => {
             </button>
 
             <div className={"TagsContainer"}>
-              <Tag
-                active={filterSetting.tags.isBusiness}
-                styleVariant={"business"}
-                text={"business"}
-                onClick={() => handleChangeFilterSettingToTags("isBusiness")}
-              />
-              <Tag
-                active={filterSetting.tags.isShopping}
-                styleVariant={"shopping"}
-                text={"shopping"}
-                onClick={() => handleChangeFilterSettingToTags("isShopping")}
-              />
-              <Tag
-                styleVariant={"other"}
-                text={"other things"}
-                active={filterSetting.tags.isOther}
-                onClick={() => handleChangeFilterSettingToTags("isOther")}
-              />
+              {tags.map((tag) => {
+                return (
+                  <Tag
+                    active={filterSetting.tags[tag.text]}
+                    text={tag.text}
+                    onClick={() => handleChangeFilterSettingToTags(tag.text)}
+                    style={{ background: `${tag.color}` }}
+                  />
+                );
+              })}
             </div>
           </div>
           <div>

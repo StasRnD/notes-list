@@ -2,8 +2,8 @@ import { Tag } from "../Tag/Tag";
 import isEqual from "lodash/isEqual";
 import React from "react";
 import { useFormik } from "formik";
-import { NoteItemProps } from "../../types";
-import { updateNotes } from "../../utils";
+import { NoteItemProps, TagProps } from "../../types";
+import { addTags, updateNotes } from "../../utils";
 import { produce } from "immer";
 import * as Yup from "yup";
 
@@ -12,6 +12,8 @@ interface NoteFormProps {
   notes: NoteItemProps[];
   setNotes: React.Dispatch<React.SetStateAction<NoteItemProps[]>>;
   closePopup: VoidFunction;
+  tags: TagProps[];
+  setTags: React.Dispatch<React.SetStateAction<TagProps[]>>;
 }
 
 export const NoteForm: React.FC<NoteFormProps> = ({
@@ -19,6 +21,8 @@ export const NoteForm: React.FC<NoteFormProps> = ({
   notes,
   setNotes,
   closePopup,
+  tags,
+  setTags,
 }) => {
   const formik = useFormik<NoteItemProps & { listItemText: string }>({
     initialValues: {
@@ -49,13 +53,18 @@ export const NoteForm: React.FC<NoteFormProps> = ({
         .min(5, "не меньше 10 символов"),
 
       description: Yup.string().min(10, "Не меньше 10 символов"),
-      tags: Yup.object({
-        isBusiness: Yup.boolean(),
-        isShopping: Yup.boolean(),
-        isOther: Yup.boolean(),
-      }).test("validationTags", (obj) => {
-        return obj.isBusiness || obj.isShopping || obj.isOther;
-      }),
+      tags: Yup.object()
+        .shape(
+          tags.reduce(
+            (acc, tag) => {
+              return { ...acc, [tag.text]: Yup.boolean() };
+            },
+            {} as { [key: string]: Yup.BooleanSchema<boolean | undefined> },
+          ),
+        )
+        .test("validationTags", (obj) => {
+          return Object.values(obj).some((el) => Boolean(el));
+        }),
       listItemText: Yup.string().min(5, "минимум 5 букв"),
     }),
   });
@@ -127,26 +136,31 @@ export const NoteForm: React.FC<NoteFormProps> = ({
       >
         Добавить пункт
       </button>
+      <button
+        type={"button"}
+        onClick={() => {
+          if (tags.map((tag) => tag.text).includes("mother")) {
+            return;
+          }
+          addTags({
+            tags: [...tags, { text: "mother", color: "green" }],
+            setTags,
+          });
+        }}
+      >
+        добавить тег
+      </button>
       <div className={"TagContainer"}>
-        <Tag
-          styleVariant={"business"}
-          text={"business"}
-          active={formik.values.tags.isBusiness}
-          onClick={() => handleTagsChange("isBusiness")}
-        />
-        <Tag
-          styleVariant={"shopping"}
-          text={"shopping"}
-          active={formik.values.tags.isShopping}
-          onClick={() => handleTagsChange("isShopping")}
-        />
-
-        <Tag
-          styleVariant={"other"}
-          text={"other things"}
-          active={formik.values.tags.isOther}
-          onClick={() => handleTagsChange("isOther")}
-        />
+        {tags.map((tag) => {
+          return (
+            <Tag
+              text={tag.text}
+              style={{ background: `${tag.color}` }}
+              active={formik.values.tags[tag.text]}
+              onClick={() => handleTagsChange(tag.text)}
+            />
+          );
+        })}
 
         {formik.touched.tags && formik.errors.tags && (
           <span className={"Error"}>Необходимо выбрать хотя бы один тег</span>
