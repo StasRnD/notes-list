@@ -141,7 +141,7 @@ const App = () => {
               Добавить
             </button>
 
-            <div className={"TagsContainer"}>
+            <div className={"TagContainer"}>
               {tags.map((tag) => {
                 return (
                   <Tag

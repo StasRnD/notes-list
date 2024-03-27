@@ -17,7 +17,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
   const formik = useFormik<TagProps>({
     initialValues: {
       text: "",
-      color: "abbccc",
+      color: "#aafbcd",
     },
     onSubmit: (newTag) => {
       addTags({
@@ -51,7 +51,9 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
           id={"text"}
         />
         {formik.touched.text && formik.errors.text ? (
-          <span className={"Error"}>{formik.errors.text}</span>
+          <span className={"Error"}>
+            Такой тег уже существует или слишком короткое название
+          </span>
         ) : null}
       </label>
       <label className={"FormLabelContainer"}>

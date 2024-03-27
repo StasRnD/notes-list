@@ -136,23 +136,28 @@ export const NoteForm: React.FC<NoteFormProps> = ({
       >
         Добавить пункт
       </button>
+      <div className={"WrapperTagsAndAddTagButton"}>
+        <div className={"TagContainer TagContainerInNoteForm"}>
+          {tags.map((tag) => {
+            return (
+              <Tag
+                text={tag.text}
+                style={{ background: `${tag.color}` }}
+                active={formik.values.tags[tag.text]}
+                onClick={() => handleTagsChange(tag.text)}
+              />
+            );
+          })}
 
-      <div className={"TagContainer"}>
-        {tags.map((tag) => {
-          return (
-            <Tag
-              text={tag.text}
-              style={{ background: `${tag.color}` }}
-              active={formik.values.tags[tag.text]}
-              onClick={() => handleTagsChange(tag.text)}
-            />
-          );
-        })}
-
-        {formik.touched.tags && formik.errors.tags && (
-          <span className={"Error"}>Необходимо выбрать хотя бы один тег</span>
-        )}
-        <button type={"button"} onClick={handleOpenAddTagForm}>
+          {formik.touched.tags && formik.errors.tags && (
+            <span className={"Error"}>Необходимо выбрать хотя бы один тег</span>
+          )}
+        </div>
+        <button
+          className={"AddTag"}
+          type={"button"}
+          onClick={handleOpenAddTagForm}
+        >
           Добавить тег
         </button>
       </div>
