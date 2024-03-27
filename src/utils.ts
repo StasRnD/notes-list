@@ -28,7 +28,10 @@ export const filterByTags = (
   if (Object.values(filterSetting).every((value) => !Boolean(value))) {
     return true;
   }
-  const x = Object.keys(filterSetting).filter((el) => filterSetting[el]);
 
-  return x.some((el) => item.tags[el]);
+  const activeFilterTagsText = Object.keys(filterSetting).filter(
+    (el) => filterSetting[el],
+  );
+
+  return activeFilterTagsText.some((el) => item.tags[el]);
 };
