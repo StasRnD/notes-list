@@ -13,31 +13,7 @@
     display: flex;
 }
 
-.SearchAndGroupWrapper {
-    display: flex;
-    flex-direction: column;
-    background-color: bisque;
-    height: min-content;
-}
 
-
-.SearchInput {
-    margin: 20px 10px;
-
-}
-
-
-.GroupItem {
-    border-radius: 0;
-    color: black;
-    background-color: #b9f0df;
-    border-top: 1px solid lightblue;
-    border-left: 5px solid transparent;
-}
-
-.ActiveGroupItem {
-    border-left: 5px solid #47c9a2;
-}
 
 
 .NotesListWrapper {

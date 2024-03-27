@@ -4,6 +4,8 @@
 @import "components/NoteItem/NoteItem.css";
 @import "components/NoteForm/NoteForm.css";
 @import "components/AddTagForm/AddTagForm.css";
+@import "components/GroupsPanel/GroupsPanel.css";
+@import "components/NotesList/NotesList.css";
 
 body {
   margin: 0;

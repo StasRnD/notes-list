@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import "./index.css";
-import { NoteItemComponent } from "./components/NoteItem/NoteItem";
 import { Tag } from "./components/Tag/Tag";
-import { updateNotes, filterByTags } from "./utils";
 import { NoteItemProps, FilterSetting, TagProps } from "./types";
 import { Popup } from "./components/Popup/Popup";
 import { NoteForm } from "./components/NoteForm/NoteForm";
 import { AddTagForm } from "./components/AddTagForm/AddTagForm";
 import { produce } from "immer";
+import { GroupsPanel } from "./components/GroupsPanel/GroupsPanel";
+import { NotesList } from "./components/NotesList/NotesList";
 
 const initialDataForm: NoteItemProps = {
   title: "",
@@ -56,7 +56,7 @@ const App = () => {
     useState<FilterSetting>(initialFilter);
   const [notes, setNotes] = useState<NoteItemProps[]>(initialNotes);
   const [tags, setTags] = useState<TagProps[]>(initialTags);
-  const handleToggleOpenPopup = (item?: NoteItemProps) => {
+  const handleToggleOpenPopupWithNoteForm = (item?: NoteItemProps) => {
     if (item) {
       setDataForm(() => item);
     }
@@ -92,67 +92,20 @@ const App = () => {
     setSearchValue(evt.target.value);
   };
 
-  const deleteNote = (id: number) => {
-    const newArray = notes.filter((item) => {
-      return item.id !== id;
-    });
-
-    updateNotes({ notes: newArray, setNotes });
-  };
-
-  const getFilterNotes = () => {
-    const filterNotes = notes
-      .filter((item) => {
-        if (filterSetting.groups === "isTrust") {
-          return item.groups.isTrust;
-        }
-        if (filterSetting.groups === "isFavorite") {
-          return item.groups.isFavorite && !item.groups.isTrust;
-        }
-        return !item.groups.isTrust;
-      })
-      .filter((item) => {
-        return filterByTags(item, filterSetting.tags);
-      })
-      .filter((item) => {
-        return (item.title + item.description + item.list.join(""))
-          .toLocaleLowerCase()
-          .includes(searchValue.toLocaleLowerCase().trim());
-      });
-
-    return (
-      <ul className={"NotesList"}>
-        {filterNotes.length > 0 ? (
-          filterNotes.map((item) => {
-            return (
-              <NoteItemComponent
-                onClick={() => handleToggleOpenPopup(item)}
-                item={item}
-                deleteNoteItem={() => deleteNote(item.id)}
-                setNotes={setNotes}
-                notes={notes}
-              />
-            );
-          })
-        ) : (
-          <span>ничего не найдено</span>
-        )}
-      </ul>
-    );
-  };
-
   return (
     <div className="App">
       {openPopupWithNoteForm && (
         <Popup
           title={dataForm.id === 0 ? "Создание" : "Редактирование"}
-          closePopup={() => handleToggleOpenPopup(initialDataForm)}
+          closePopup={() => handleToggleOpenPopupWithNoteForm(initialDataForm)}
         >
           <NoteForm
             item={dataForm}
             notes={notes}
             setNotes={setNotes}
-            closePopup={() => handleToggleOpenPopup(initialDataForm)}
+            closePopup={() =>
+              handleToggleOpenPopupWithNoteForm(initialDataForm)
+            }
             tags={tags}
             handleOpenAddTagForm={handleToggleOpenPopupWithAddForm}
           />
@@ -172,38 +125,18 @@ const App = () => {
       )}
 
       <div className={"Page"}>
-        <div className={"SearchAndGroupWrapper"}>
-          <input
-            className={"SearchInput"}
-            value={searchValue}
-            onChange={handleChangeSearchInput}
-            placeholder={"Поиск..."}
-          />
+        <GroupsPanel
+          searchValue={searchValue}
+          handleChangeSearchInput={handleChangeSearchInput}
+          filterGroups={filterSetting.groups}
+          handleChangeFilterSettingToGroups={handleChangeFilterSettingToGroups}
+        />
 
-          <button
-            className={`GroupItem ${filterSetting.groups === null ? "ActiveGroupItem" : ""}`}
-            onClick={() => handleChangeFilterSettingToGroups(null)}
-          >
-            Все заметки
-          </button>
-          <button
-            className={`GroupItem ${filterSetting.groups === "isFavorite" ? "ActiveGroupItem" : ""}`}
-            onClick={() => handleChangeFilterSettingToGroups("isFavorite")}
-          >
-            Избранное
-          </button>
-          <button
-            className={`GroupItem ${filterSetting.groups === "isTrust" ? "ActiveGroupItem" : ""}`}
-            onClick={() => handleChangeFilterSettingToGroups("isTrust")}
-          >
-            Корзина
-          </button>
-        </div>
         <div className={"NotesListWrapper"}>
           <div className={"InteractiveElementWrapper"}>
             <button
               className={"AddNoteButton"}
-              onClick={() => handleToggleOpenPopup()}
+              onClick={() => handleToggleOpenPopupWithNoteForm()}
             >
               Добавить
             </button>
@@ -222,7 +155,19 @@ const App = () => {
             </div>
           </div>
           <div>
-            {notes.length ? getFilterNotes() : <span>Ничего не добавлено</span>}
+            {notes.length ? (
+              <NotesList
+                notes={notes}
+                setNotes={setNotes}
+                searchValue={searchValue}
+                filterSetting={filterSetting}
+                handleToggleOpenPopupWithNoteForm={
+                  handleToggleOpenPopupWithNoteForm
+                }
+              />
+            ) : (
+              <span>Ничего не добавлено</span>
+            )}
           </div>
         </div>
       </div>
