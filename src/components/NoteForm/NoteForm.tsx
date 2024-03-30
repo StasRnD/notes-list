@@ -2,31 +2,30 @@ import { Tag } from "../Tag/Tag";
 import isEqual from "lodash/isEqual";
 import React from "react";
 import { useFormik } from "formik";
-import { NoteItemProps, TagProps } from "../../types";
-import { updateNotes } from "../../utils";
-import { produce } from "immer";
+import { NoteItemProps } from "../../types";
 import * as Yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { addNote, updateNote } from "../../store/notes/slice";
+import { SelectorTags } from "../../store/tags/selectors";
+import { SelectorNotes } from "../../store/notes/selectors";
 
 interface NoteFormProps {
-  item: NoteItemProps;
-  notes: NoteItemProps[];
-  setNotes: React.Dispatch<React.SetStateAction<NoteItemProps[]>>;
   closePopup: VoidFunction;
-  tags: TagProps[];
   handleOpenAddTagForm: VoidFunction;
 }
 
 export const NoteForm: React.FC<NoteFormProps> = ({
-  item,
-  notes,
-  setNotes,
   closePopup,
-  tags,
   handleOpenAddTagForm,
 }) => {
+  const dispatch = useDispatch();
+  const tagsList = useSelector(SelectorTags.tagsList);
+  const notesList = useSelector(SelectorNotes.notesList);
+  const noteToForm = useSelector(SelectorNotes.noteToForm);
+
   const formik = useFormik<NoteItemProps & { listItemText: string }>({
     initialValues: {
-      ...item,
+      ...noteToForm,
       listItemText: "",
     },
     onSubmit: ({ listItemText, ...itemInForm }) => {
@@ -34,16 +33,12 @@ export const NoteForm: React.FC<NoteFormProps> = ({
        * id = 0, когда создаётся новый itemNote.
        */
       if (itemInForm.id === 0) {
-        itemInForm.id = notes.length + 1;
-        updateNotes({ notes: [...notes, itemInForm], setNotes });
+        itemInForm.id = notesList.length + 1;
+        dispatch(addNote(itemInForm));
         closePopup();
         return;
       }
-
-      const nextState = produce(notes, (draftState) => {
-        draftState[itemInForm.id - 1] = itemInForm;
-      });
-      updateNotes({ notes: nextState, setNotes });
+      dispatch(updateNote(itemInForm));
       closePopup();
     },
 
@@ -55,7 +50,7 @@ export const NoteForm: React.FC<NoteFormProps> = ({
       description: Yup.string().min(10, "Не меньше 10 символов"),
       tags: Yup.object()
         .shape(
-          tags.reduce(
+          tagsList.reduce(
             (acc, tag) => {
               return { ...acc, [tag.text]: Yup.boolean() };
             },
@@ -138,7 +133,7 @@ export const NoteForm: React.FC<NoteFormProps> = ({
       </button>
       <div className={"WrapperTagsAndAddTagButton"}>
         <div className={"TagContainer TagContainerInNoteForm"}>
-          {tags.map((tag) => {
+          {tagsList.map((tag) => {
             return (
               <Tag
                 text={tag.text}
@@ -161,7 +156,9 @@ export const NoteForm: React.FC<NoteFormProps> = ({
           Добавить тег
         </button>
       </div>
-      <button disabled={isEqual({ ...item, listItemText: "" }, formik.values)}>
+      <button
+        disabled={isEqual({ ...noteToForm, listItemText: "" }, formik.values)}
+      >
         Отправить
       </button>
     </form>

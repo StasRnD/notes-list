@@ -18,7 +18,12 @@ export interface TagProps {
   color: string;
 }
 
-export type FilterSetting = {
+export interface FilterSetting {
   tags: NoteItemProps["tags"];
   groups: keyof NoteItemProps["groups"] | null;
-};
+}
+
+export interface GroupsButtonProps {
+  text: string;
+  flag: FilterSetting["groups"];
+}
