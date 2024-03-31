@@ -1,23 +1,22 @@
-import { filterByTags, updateNotes } from "../../utils";
+import { filterByTags } from "../../utils";
 import { NoteItemComponent } from "../NoteItem/NoteItem";
 import React from "react";
-import { FilterSetting, NoteItemProps } from "../../types";
+import { NoteItemProps } from "../../types";
+import { useSelector } from "react-redux";
+import { SelectorNotes } from "../../store/notes/selectors";
 
 interface NotesListProps {
-  notes: NoteItemProps[];
-  filterSetting: FilterSetting;
   searchValue: string;
-  setNotes: React.Dispatch<React.SetStateAction<NoteItemProps[]>>;
   handleToggleOpenPopupWithNoteForm: (item: NoteItemProps) => void;
 }
 export const NotesList: React.FC<NotesListProps> = ({
-  notes,
-  filterSetting,
   searchValue,
-  setNotes,
   handleToggleOpenPopupWithNoteForm,
 }) => {
-  const filterNotes = notes
+  const notesList = useSelector(SelectorNotes.notesList);
+  const filterSetting = useSelector(SelectorNotes.filterSetting);
+
+  const filterNotes = notesList
     .filter((item) => {
       if (filterSetting.groups === "isTrust") {
         return item.groups.isTrust;
@@ -36,14 +35,6 @@ export const NotesList: React.FC<NotesListProps> = ({
         .includes(searchValue.toLocaleLowerCase().trim());
     });
 
-  const deleteNote = (id: number) => {
-    const newArray = notes.filter((item) => {
-      return item.id !== id;
-    });
-
-    updateNotes({ notes: newArray, setNotes });
-  };
-
   return (
     <ul className={"NotesList"}>
       {filterNotes.length > 0 ? (
@@ -52,9 +43,6 @@ export const NotesList: React.FC<NotesListProps> = ({
             <NoteItemComponent
               onClick={() => handleToggleOpenPopupWithNoteForm(item)}
               item={item}
-              deleteNoteItem={() => deleteNote(item.id)}
-              setNotes={setNotes}
-              notes={notes}
             />
           );
         })

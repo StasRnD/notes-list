@@ -1,38 +1,20 @@
 import React from "react";
-import { FilterSetting } from "../../types";
+import { groupsButton } from "../../constans";
+import { useDispatch, useSelector } from "react-redux";
+import { updateGroupForFilterSetting } from "../../store/notes/slice";
+import { SelectorNotes } from "../../store/notes/selectors";
 
 interface GroupsPanelProps {
-  filterGroups: FilterSetting["groups"];
-  handleChangeFilterSettingToGroups: (name: FilterSetting["groups"]) => void;
   searchValue: string;
   handleChangeSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-interface GroupsButtonProps {
-  text: string;
-  flag: FilterSetting["groups"];
-}
-
-const groupsButton: GroupsButtonProps[] = [
-  {
-    text: "Все заметки",
-    flag: null,
-  },
-  {
-    text: "Избранное",
-    flag: "isFavorite",
-  },
-  {
-    text: "Корзина",
-    flag: "isTrust",
-  },
-];
 export const GroupsPanel: React.FC<GroupsPanelProps> = ({
-  filterGroups,
   handleChangeSearchInput,
   searchValue,
-  handleChangeFilterSettingToGroups,
 }) => {
+  const dispatch = useDispatch();
+  const filterGroups = useSelector(SelectorNotes.filterSettingGroup);
   return (
     <div className={"SearchAndGroupWrapper"}>
       <input
@@ -45,7 +27,7 @@ export const GroupsPanel: React.FC<GroupsPanelProps> = ({
         return (
           <button
             className={`GroupItem ${filterGroups === flag ? "ActiveGroupItem" : ""}`}
-            onClick={() => handleChangeFilterSettingToGroups(flag)}
+            onClick={() => dispatch(updateGroupForFilterSetting(flag))}
           >
             {text}
           </button>

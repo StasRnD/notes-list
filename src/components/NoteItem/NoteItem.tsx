@@ -1,42 +1,30 @@
 import React from "react";
 import { NoteItemProps } from "../../types";
-import { updateNotes } from "../../utils";
-import { produce } from "immer";
+import { useDispatch } from "react-redux";
+import { deleteNote, updateGroupInNote } from "../../store/notes/slice";
 
 interface NoteItemComponentProps {
   item: NoteItemProps;
   onClick: VoidFunction;
-  deleteNoteItem: VoidFunction;
-  setNotes: React.Dispatch<React.SetStateAction<NoteItemProps[]>>;
-  notes: NoteItemProps[];
 }
 
 export const NoteItemComponent: React.FC<NoteItemComponentProps> = ({
   item,
   onClick,
-  deleteNoteItem,
-  setNotes,
-  notes,
 }) => {
   const { title, description, list } = item;
+  const dispatch = useDispatch();
 
-  const updateGroupInItem = (name: keyof NoteItemProps["groups"]) => {
-    const nextState = produce(notes, (draftState) => {
-      draftState[item.id - 1].groups[name] = !item.groups[name];
-    });
-    updateNotes({ notes: nextState, setNotes });
-  };
-
-  const handleDeleteNote = (
+  const handleToggleGroupItem = (
     event: React.MouseEvent<HTMLImageElement>,
     name: keyof NoteItemProps["groups"],
   ) => {
     event.stopPropagation();
     if (name === "isTrust" && item.groups.isTrust) {
-      deleteNoteItem();
+      dispatch(deleteNote(item.id));
       return;
     }
-    updateGroupInItem(name);
+    dispatch(updateGroupInNote({ item, name }));
   };
 
   return (
@@ -48,15 +36,13 @@ export const NoteItemComponent: React.FC<NoteItemComponentProps> = ({
             src={"basket.svg"}
             className={`ActionImage ${item.groups.isTrust ? "ActiveImage" : ""}`}
             alt={"Корзина"}
-            onClick={(event) => handleDeleteNote(event, "isTrust")}
+            onClick={(event) => handleToggleGroupItem(event, "isTrust")}
           />
           <img
             src={"favorite.svg"}
             className={`ActionImage ${item.groups.isFavorite ? "ActiveImage" : ""}`}
             alt={"Избранное"}
-            onClick={(event: React.MouseEvent<HTMLImageElement>) =>
-              handleDeleteNote(event, "isFavorite")
-            }
+            onClick={(event) => handleToggleGroupItem(event, "isFavorite")}
           />
         </div>
       </div>

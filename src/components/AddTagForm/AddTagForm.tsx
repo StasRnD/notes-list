@@ -2,28 +2,25 @@ import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TagProps } from "../../types";
-import { addTags } from "../../utils";
+import { useDispatch, useSelector } from "react-redux";
+import { addTag } from "../../store/tags/slice";
+import { SelectorTags } from "../../store/tags/selectors";
 
 interface AddTagFormProps {
-  tags: TagProps[];
-  setTags: React.Dispatch<React.SetStateAction<TagProps[]>>;
   toggleOpenPopupWithAddForm: VoidFunction;
 }
 export const AddTagForm: React.FC<AddTagFormProps> = ({
-  tags,
-  setTags,
   toggleOpenPopupWithAddForm,
 }) => {
+  const dispatch = useDispatch();
+  const tagsList = useSelector(SelectorTags.tagsList);
   const formik = useFormik<TagProps>({
     initialValues: {
       text: "",
       color: "#aafbcd",
     },
     onSubmit: (newTag) => {
-      addTags({
-        tags: [...tags, newTag],
-        setTags,
-      });
+      dispatch(addTag(newTag));
       toggleOpenPopupWithAddForm();
     },
 
@@ -32,7 +29,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
         .required()
         .min(5, "минимум 5 символов")
         .test("hasSimilarTag", (tag) => {
-          return tags.every(
+          return tagsList.every(
             ({ text }) =>
               text.toLowerCase().trim() !== tag?.toLowerCase().trim(),
           );
