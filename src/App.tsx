@@ -51,12 +51,10 @@ const App = () => {
       {openPopupWithNoteForm && (
         <Popup
           title={noteToForm.id === 0 ? "Создание" : "Редактирование"}
-          closePopup={() => handleToggleOpenPopupWithNoteForm(initialDataForm)}
+          closePopup={() => handleToggleOpenPopupWithNoteForm()}
         >
           <NoteForm
-            closePopup={() =>
-              handleToggleOpenPopupWithNoteForm(initialDataForm)
-            }
+            closePopup={() => handleToggleOpenPopupWithNoteForm()}
             handleOpenAddTagForm={handleToggleOpenPopupWithAddForm}
           />
         </Popup>
@@ -82,7 +80,7 @@ const App = () => {
           <div className={"InteractiveElementWrapper"}>
             <button
               className={"AddNoteButton"}
-              onClick={() => handleToggleOpenPopupWithNoteForm()}
+              onClick={() => handleToggleOpenPopupWithNoteForm(initialDataForm)}
             >
               Добавить
             </button>
