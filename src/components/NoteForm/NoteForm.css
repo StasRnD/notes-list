@@ -20,19 +20,8 @@
     flex-grow: 2;
 }
 
-.TagContainer {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    flex-wrap: wrap;
-    width: 50%;
 
-}
-.TagContainerInNoteForm {
-    justify-content: start;
-    width: 100%;
-}
+
 
 .TagItem {
     flex-grow: 1;

@@ -31,12 +31,7 @@
 
 }
 
-.NotesList {
-     display: flex;
-    flex-direction: column;
-    row-gap: 20px;
-    padding: 0;
-}
+
 
 .AddNoteButton {
     padding: 5px 10px;

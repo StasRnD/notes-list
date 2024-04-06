@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./index.css";
-import { Tag } from "./components/Tag/Tag";
 import { NoteItemProps } from "./types";
 import { Popup } from "./components/Popup/Popup";
 import { NoteForm } from "./components/NoteForm/NoteForm";
@@ -9,12 +8,9 @@ import { GroupsPanel } from "./components/GroupsPanel/GroupsPanel";
 import { NotesList } from "./components/NotesList/NotesList";
 import { useDispatch, useSelector } from "react-redux";
 import { SelectorNotes } from "./store/notes/selectors";
-import { SelectorTags } from "./store/tags/selectors";
-import {
-  updateNoteToForm,
-  updateTagForFilterSetting,
-} from "./store/notes/slice";
+import { updateNoteToForm } from "./store/notes/slice";
 import { initialDataForm } from "./constans";
+import { TagsContainer } from "./components/TagsContainer/TagsConatiner";
 
 const App = () => {
   const [openPopupWithNoteForm, setOpenPopupWithNoteForm] =
@@ -25,7 +21,6 @@ const App = () => {
 
   const dispatch = useDispatch();
   const notesList = useSelector(SelectorNotes.notesList);
-  const tagsList = useSelector(SelectorTags.tagsList);
   const noteToForm = useSelector(SelectorNotes.noteToForm);
   const filterSetting = useSelector(SelectorNotes.filterSetting);
   const handleToggleOpenPopupWithNoteForm = (item?: NoteItemProps) => {
@@ -85,20 +80,7 @@ const App = () => {
               Добавить
             </button>
 
-            <div className={"TagContainer"}>
-              {tagsList.map((tag) => {
-                return (
-                  <Tag
-                    active={filterSetting.tags[tag.text]}
-                    text={tag.text}
-                    onClick={() =>
-                      dispatch(updateTagForFilterSetting(tag.text))
-                    }
-                    style={{ background: `${tag.color}` }}
-                  />
-                );
-              })}
-            </div>
+            <TagsContainer allTagList={filterSetting.tags} />
           </div>
           <div>
             {notesList.length ? (

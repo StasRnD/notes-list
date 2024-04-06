@@ -6,6 +6,7 @@
 @import "components/AddTagForm/AddTagForm.css";
 @import "components/GroupsPanel/GroupsPanel.css";
 @import "components/NotesList/NotesList.css";
+@import "components/TagsContainer/TagContainer.css";
 
 body {
   margin: 0;

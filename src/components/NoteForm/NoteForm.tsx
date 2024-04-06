@@ -1,4 +1,3 @@
-import { Tag } from "../Tag/Tag";
 import isEqual from "lodash/isEqual";
 import React from "react";
 import { useFormik } from "formik";
@@ -8,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addNote, updateNote } from "../../store/notes/slice";
 import { SelectorTags } from "../../store/tags/selectors";
 import { SelectorNotes } from "../../store/notes/selectors";
+import { TagsContainer } from "../TagsContainer/TagsConatiner";
 
 interface NoteFormProps {
   closePopup: VoidFunction;
@@ -132,22 +132,17 @@ export const NoteForm: React.FC<NoteFormProps> = ({
         Добавить пункт
       </button>
       <div className={"WrapperTagsAndAddTagButton"}>
-        <div className={"TagContainer TagContainerInNoteForm"}>
-          {tagsList.map((tag) => {
-            return (
-              <Tag
-                text={tag.text}
-                style={{ background: `${tag.color}` }}
-                active={formik.values.tags[tag.text]}
-                onClick={() => handleTagsChange(tag.text)}
-              />
-            );
-          })}
-
+        <TagsContainer
+          className={"TagContainerInNoteForm"}
+          allTagList={formik.values.tags}
+          toNoteForm
+          onClickToTag={handleTagsChange}
+        >
           {formik.touched.tags && formik.errors.tags && (
             <span className={"Error"}>Необходимо выбрать хотя бы один тег</span>
           )}
-        </div>
+        </TagsContainer>
+
         <button
           className={"AddTag"}
           type={"button"}
