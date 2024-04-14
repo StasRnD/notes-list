@@ -21,6 +21,7 @@ export const TagsContainer: React.FC<PropsWithChildren<TagsContainerProps>> = (
 ) => {
   const { className, toNoteForm, children } = props;
   const tagsList = useSelector(SelectorTags.tagsList);
+  const activeTags = useSelector(SelectorTags.activeTags);
   const dispatch = useDispatch();
 
   const handleClick = (tagName: string) => {
@@ -37,7 +38,7 @@ export const TagsContainer: React.FC<PropsWithChildren<TagsContainerProps>> = (
       {tagsList.map((tag) => {
         return (
           <Tag
-            active={toNoteForm && props.tagsToForm[tag.text]}
+            active={(toNoteForm ? props.tagsToForm : activeTags)[tag.text]}
             text={tag.text}
             onClick={() => handleClick(tag.text)}
             style={{ background: `${tag.color}` }}
