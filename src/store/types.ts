@@ -1,10 +1,14 @@
-import { FilterSetting, NoteItemProps, TagProps } from "../types";
+import { NoteItemProps, TagProps } from "../types";
 
 export interface rootState {
-  tags: TagProps[];
+  tags: {
+    tags: TagProps[];
+    activeTags: NoteItemProps["tags"];
+  };
   notes: {
     notesList: NoteItemProps[];
     noteToForm: NoteItemProps & { listItemText: string };
-    filterSetting: FilterSetting;
   };
+  searchValue: string;
+  activeGroup: keyof NoteItemProps["groups"] | null;
 }

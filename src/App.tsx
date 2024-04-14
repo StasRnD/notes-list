@@ -17,12 +17,10 @@ const App = () => {
     useState<boolean>(false);
   const [openPopupWithAddTagForm, setOpenPopupWithAddTagForm] =
     useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string>("");
 
   const dispatch = useDispatch();
   const notesList = useSelector(SelectorNotes.notesList);
   const noteToForm = useSelector(SelectorNotes.noteToForm);
-  const filterSetting = useSelector(SelectorNotes.filterSetting);
   const handleToggleOpenPopupWithNoteForm = (item?: NoteItemProps) => {
     if (item) {
       dispatch(updateNoteToForm(item));
@@ -35,41 +33,31 @@ const App = () => {
     setOpenPopupWithAddTagForm((openValue) => !openValue);
   };
 
-  const handleChangeSearchInput = (
-    evt: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setSearchValue(evt.target.value);
-  };
-
   return (
     <div className="App">
-      {openPopupWithNoteForm && (
-        <Popup
-          title={noteToForm.id === 0 ? "Создание" : "Редактирование"}
+      <Popup
+        open={openPopupWithNoteForm}
+        title={noteToForm.id === 0 ? "Создание" : "Редактирование"}
+        closePopup={() => handleToggleOpenPopupWithNoteForm()}
+      >
+        <NoteForm
           closePopup={() => handleToggleOpenPopupWithNoteForm()}
-        >
-          <NoteForm
-            closePopup={() => handleToggleOpenPopupWithNoteForm()}
-            handleOpenAddTagForm={handleToggleOpenPopupWithAddForm}
-          />
-        </Popup>
-      )}
-      {openPopupWithAddTagForm && (
-        <Popup
-          title={"Добавить тег"}
-          closePopup={handleToggleOpenPopupWithAddForm}
-        >
-          <AddTagForm
-            toggleOpenPopupWithAddForm={handleToggleOpenPopupWithAddForm}
-          />
-        </Popup>
-      )}
+          handleOpenAddTagForm={handleToggleOpenPopupWithAddForm}
+        />
+      </Popup>
+
+      <Popup
+        open={openPopupWithAddTagForm}
+        title={"Добавить тег"}
+        closePopup={handleToggleOpenPopupWithAddForm}
+      >
+        <AddTagForm
+          toggleOpenPopupWithAddForm={handleToggleOpenPopupWithAddForm}
+        />
+      </Popup>
 
       <div className={"Page"}>
-        <GroupsPanel
-          searchValue={searchValue}
-          handleChangeSearchInput={handleChangeSearchInput}
-        />
+        <GroupsPanel />
 
         <div className={"NotesListWrapper"}>
           <div className={"InteractiveElementWrapper"}>
@@ -80,12 +68,11 @@ const App = () => {
               Добавить
             </button>
 
-            <TagsContainer allTagList={filterSetting.tags} />
+            <TagsContainer />
           </div>
           <div>
             {notesList.length ? (
               <NotesList
-                searchValue={searchValue}
                 handleToggleOpenPopupWithNoteForm={
                   handleToggleOpenPopupWithNoteForm
                 }

@@ -1,16 +1,19 @@
 import React, { PropsWithChildren, useRef } from "react";
+import { Popper, ClickAwayListener } from "@mui/base";
 
 import { useOutsideClickPopup } from "../../hooks";
 
 interface PopupProps {
   closePopup: VoidFunction;
   title: string;
+  open: boolean;
 }
 
 export const Popup: React.FC<PropsWithChildren<PopupProps>> = ({
   closePopup,
   children,
   title,
+  open,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -20,12 +23,14 @@ export const Popup: React.FC<PropsWithChildren<PopupProps>> = ({
   useOutsideClickPopup(ref, containerRef, closePopup);
 
   return (
-    <div className={"PopupContainer"} ref={containerRef}>
+    <Popper open={open} className={"PopupContainer"} ref={containerRef}>
       <div className={"Overlay"}></div>
-      <div className={"Popup"} ref={ref}>
-        <h3>{title}</h3>
-        {children}
-      </div>
-    </div>
+      <ClickAwayListener onClickAway={closePopup}>
+        <div className={"Popup"} ref={ref}>
+          <h3>{title}</h3>
+          {children}
+        </div>
+      </ClickAwayListener>
+    </Popper>
   );
 };

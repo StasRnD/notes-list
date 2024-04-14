@@ -1,14 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FilterSetting, NoteItemProps } from "../../types";
+import { NoteItemProps } from "../../types";
 import { updateNotes } from "../../utils";
-import { initialDataForm, initialFilter, initialNotes } from "../../constans";
+import { initialDataForm, initialNotes } from "../../constans";
 
 export const notesReducer = createSlice({
   name: "notesReducer",
   initialState: {
     notesList: initialNotes,
     noteToForm: initialDataForm,
-    filterSetting: initialFilter,
   },
   reducers: {
     addNote(state, { payload }: PayloadAction<NoteItemProps>) {
@@ -48,21 +47,6 @@ export const notesReducer = createSlice({
     updateNoteToForm(state, { payload }: PayloadAction<NoteItemProps>) {
       state.noteToForm = payload;
     },
-
-    updateTagForFilterSetting(state, { payload }: PayloadAction<string>) {
-      const newFilterSetting = state.filterSetting;
-      newFilterSetting.tags[payload] = !newFilterSetting.tags[payload];
-      state.filterSetting = newFilterSetting;
-    },
-
-    updateGroupForFilterSetting(
-      state,
-      { payload }: PayloadAction<FilterSetting["groups"]>,
-    ) {
-      const newFilterSetting = state.filterSetting;
-      newFilterSetting.groups = payload;
-      state.filterSetting = newFilterSetting;
-    },
   },
 });
 
@@ -72,6 +56,4 @@ export const {
   updateNote,
   updateGroupInNote,
   updateNoteToForm,
-  updateTagForFilterSetting,
-  updateGroupForFilterSetting,
 } = notesReducer.actions;

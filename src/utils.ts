@@ -10,14 +10,14 @@ export const updateTags = (tags: TagProps[]) => {
 
 export const filterByTags = (
   item: NoteItemProps,
-  filterSetting: NoteItemProps["tags"],
+  activeTags: NoteItemProps["tags"],
 ) => {
-  if (Object.values(filterSetting).every((value) => !Boolean(value))) {
+  if (Object.values(activeTags).every((value) => !Boolean(value))) {
     return true;
   }
 
-  const activeFilterTagsText = Object.keys(filterSetting).filter(
-    (el) => filterSetting[el],
+  const activeFilterTagsText = Object.keys(activeTags).filter(
+    (el) => activeTags[el],
   );
 
   return activeFilterTagsText.some((el) => item.tags[el]);

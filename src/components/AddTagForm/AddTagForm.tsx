@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TagProps } from "../../types";
 import { useDispatch, useSelector } from "react-redux";
-import { addTag } from "../../store/tags/slice";
+import { addGlobalTag } from "../../store/tags/slice";
 import { SelectorTags } from "../../store/tags/selectors";
 
 interface AddTagFormProps {
@@ -20,7 +20,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
       color: "#aafbcd",
     },
     onSubmit: (newTag) => {
-      dispatch(addTag(newTag));
+      dispatch(addGlobalTag(newTag));
       toggleOpenPopupWithAddForm();
     },
 

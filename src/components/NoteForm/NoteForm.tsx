@@ -134,8 +134,8 @@ export const NoteForm: React.FC<NoteFormProps> = ({
       <div className={"WrapperTagsAndAddTagButton"}>
         <TagsContainer
           className={"TagContainerInNoteForm"}
-          allTagList={formik.values.tags}
           toNoteForm
+          tagsToForm={formik.values.tags}
           onClickToTag={handleTagsChange}
         >
           {formik.touched.tags && formik.errors.tags && (

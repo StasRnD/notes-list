@@ -1,9 +1,4 @@
-import {
-  NoteItemProps,
-  TagProps,
-  GroupsButtonProps,
-  FilterSetting,
-} from "./types";
+import { NoteItemProps, TagProps, GroupsButtonProps } from "./types";
 
 export const initialNotes: NoteItemProps[] = JSON.parse(
   localStorage.getItem("notes") || `[]`,
@@ -44,14 +39,9 @@ export const groupsButton: GroupsButtonProps[] = [
   },
 ];
 
-const initialFilterTags = initialTags.reduce(
+export const initialFilterTags = initialTags.reduce(
   (acc, tag) => {
     return { ...acc, [tag.text]: false };
   },
   {} as NoteItemProps["tags"],
 );
-
-export const initialFilter: FilterSetting = {
-  tags: initialFilterTags,
-  groups: null,
-};

@@ -4,30 +4,32 @@ import React from "react";
 import { NoteItemProps } from "../../types";
 import { useSelector } from "react-redux";
 import { SelectorNotes } from "../../store/notes/selectors";
+import { SelectorSearch } from "../../store/search/selectors";
+import { SelectorTags } from "../../store/tags/selectors";
+import { SelectorsGroup } from "../../store/groups/selectors";
 
 interface NotesListProps {
-  searchValue: string;
   handleToggleOpenPopupWithNoteForm: (item: NoteItemProps) => void;
 }
 export const NotesList: React.FC<NotesListProps> = ({
-  searchValue,
   handleToggleOpenPopupWithNoteForm,
 }) => {
   const notesList = useSelector(SelectorNotes.notesList);
-  const filterSetting = useSelector(SelectorNotes.filterSetting);
-
+  const activeTags = useSelector(SelectorTags.activeTags);
+  const activeGroup = useSelector(SelectorsGroup.activeGroup);
+  const searchValue = useSelector(SelectorSearch.searchValue);
   const filterNotes = notesList
     .filter((item) => {
-      if (filterSetting.groups === "isTrust") {
+      if (activeGroup === "isTrust") {
         return item.groups.isTrust;
       }
-      if (filterSetting.groups === "isFavorite") {
+      if (activeGroup === "isFavorite") {
         return item.groups.isFavorite && !item.groups.isTrust;
       }
       return !item.groups.isTrust;
     })
     .filter((item) => {
-      return filterByTags(item, filterSetting.tags);
+      return filterByTags(item, activeTags);
     })
     .filter((item) => {
       return (item.title + item.description + item.list.join(""))
