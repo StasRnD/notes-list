@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useRef } from "react";
+import React, { MouseEventHandler, PropsWithChildren, useRef } from "react";
 import { Popper, ClickAwayListener } from "@mui/base";
 
 import { useOutsideClickPopup } from "../../hooks";
@@ -19,8 +19,6 @@ export const Popup: React.FC<PropsWithChildren<PopupProps>> = ({
 
   // Элемент для навешивание события клика вне Popup
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useOutsideClickPopup(ref, containerRef, closePopup);
 
   return (
     <Popper open={open} className={"PopupContainer"} ref={containerRef}>

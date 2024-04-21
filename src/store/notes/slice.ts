@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { NoteItemProps } from "../../types";
-import { updateNotes } from "../../utils";
+import { NoteItemProps, TagProps } from "../../types";
+import {
+  filterByActiveGroup,
+  filterBySearchValue,
+  filterByTags,
+  updateNotes,
+} from "../../utils";
 import { initialDataForm, initialNotes } from "../../constans";
 
 export const notesReducer = createSlice({
@@ -8,6 +13,7 @@ export const notesReducer = createSlice({
   initialState: {
     notesList: initialNotes,
     noteToForm: initialDataForm,
+    filteredNotesList: [] as NoteItemProps[],
   },
   reducers: {
     addNote(state, { payload }: PayloadAction<NoteItemProps>) {
@@ -47,6 +53,22 @@ export const notesReducer = createSlice({
     updateNoteToForm(state, { payload }: PayloadAction<NoteItemProps>) {
       state.noteToForm = payload;
     },
+
+    getFilterNotesList(
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        searchValue: string;
+        activeGroup: keyof NoteItemProps["groups"] | null;
+        activeTags: NoteItemProps["tags"];
+      }>,
+    ) {
+      state.filteredNotesList = state.notesList
+        .filter((item) => filterByActiveGroup(item, payload.activeGroup))
+        .filter((item) => filterByTags(item, payload.activeTags))
+        .filter((item) => filterBySearchValue(item, payload.searchValue));
+    },
   },
 });
 
@@ -56,4 +78,5 @@ export const {
   updateNote,
   updateGroupInNote,
   updateNoteToForm,
+  getFilterNotesList,
 } = notesReducer.actions;

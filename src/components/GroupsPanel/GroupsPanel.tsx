@@ -25,7 +25,6 @@ export const GroupsPanel: React.FC = () => {
         placeholder={"Поиск..."}
       />
       {groupsButton.map(({ text, flag }) => {
-        console.log(activeGroup);
         return (
           <button
             className={`GroupItem ${activeGroup === flag ? "ActiveGroupItem" : ""}`}

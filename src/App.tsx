@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.css";
 import { NoteItemProps } from "./types";
 import { Popup } from "./components/Popup/Popup";
@@ -8,14 +8,12 @@ import { GroupsPanel } from "./components/GroupsPanel/GroupsPanel";
 import { NotesList } from "./components/NotesList/NotesList";
 import { useDispatch, useSelector } from "react-redux";
 import { SelectorNotes } from "./store/notes/selectors";
-import { updateNoteToForm } from "./store/notes/slice";
+import { getFilterNotesList, updateNoteToForm } from "./store/notes/slice";
 import { initialDataForm } from "./constans";
 import { TagsContainer } from "./components/TagsContainer/TagsConatiner";
 
 const App = () => {
   const [openPopupWithNoteForm, setOpenPopupWithNoteForm] =
-    useState<boolean>(false);
-  const [openPopupWithAddTagForm, setOpenPopupWithAddTagForm] =
     useState<boolean>(false);
 
   const dispatch = useDispatch();
@@ -29,10 +27,6 @@ const App = () => {
     setOpenPopupWithNoteForm((openValue) => !openValue);
   };
 
-  const handleToggleOpenPopupWithAddForm = () => {
-    setOpenPopupWithAddTagForm((openValue) => !openValue);
-  };
-
   return (
     <div className="App">
       <Popup
@@ -40,20 +34,7 @@ const App = () => {
         title={noteToForm.id === 0 ? "Создание" : "Редактирование"}
         closePopup={() => handleToggleOpenPopupWithNoteForm()}
       >
-        <NoteForm
-          closePopup={() => handleToggleOpenPopupWithNoteForm()}
-          handleOpenAddTagForm={handleToggleOpenPopupWithAddForm}
-        />
-      </Popup>
-
-      <Popup
-        open={openPopupWithAddTagForm}
-        title={"Добавить тег"}
-        closePopup={handleToggleOpenPopupWithAddForm}
-      >
-        <AddTagForm
-          toggleOpenPopupWithAddForm={handleToggleOpenPopupWithAddForm}
-        />
+        <NoteForm closePopup={() => handleToggleOpenPopupWithNoteForm()} />
       </Popup>
 
       <div className={"Page"}>

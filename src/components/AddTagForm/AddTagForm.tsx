@@ -18,6 +18,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
     initialValues: {
       text: "",
       color: "#aafbcd",
+      id: tagsList.length + 1,
     },
     onSubmit: (newTag) => {
       dispatch(addGlobalTag(newTag));

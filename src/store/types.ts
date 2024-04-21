@@ -8,6 +8,7 @@ export interface rootState {
   notes: {
     notesList: NoteItemProps[];
     noteToForm: NoteItemProps & { listItemText: string };
+    filteredNotesList: NoteItemProps[];
   };
   searchValue: string;
   activeGroup: keyof NoteItemProps["groups"] | null;

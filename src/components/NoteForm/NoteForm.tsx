@@ -1,5 +1,5 @@
 import isEqual from "lodash/isEqual";
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import { NoteItemProps } from "../../types";
 import * as Yup from "yup";
@@ -8,16 +8,21 @@ import { addNote, updateNote } from "../../store/notes/slice";
 import { SelectorTags } from "../../store/tags/selectors";
 import { SelectorNotes } from "../../store/notes/selectors";
 import { TagsContainer } from "../TagsContainer/TagsConatiner";
+import { Popup } from "../Popup/Popup";
+import { AddTagForm } from "../AddTagForm/AddTagForm";
 
 interface NoteFormProps {
   closePopup: VoidFunction;
-  handleOpenAddTagForm: VoidFunction;
 }
 
-export const NoteForm: React.FC<NoteFormProps> = ({
-  closePopup,
-  handleOpenAddTagForm,
-}) => {
+export const NoteForm: React.FC<NoteFormProps> = ({ closePopup }) => {
+  const [openPopupWithAddTagForm, setOpenPopupWithAddTagForm] =
+    useState<boolean>(false);
+
+  const handleToggleOpenPopupWithAddTagForm = () => {
+    setOpenPopupWithAddTagForm((openValue) => !openValue);
+  };
+
   const dispatch = useDispatch();
   const tagsList = useSelector(SelectorTags.tagsList);
   const notesList = useSelector(SelectorNotes.notesList);
@@ -75,87 +80,101 @@ export const NoteForm: React.FC<NoteFormProps> = ({
     ]);
     formik.setFieldValue(`listItemText`, "");
   };
+
   return (
-    <form className={"NoteForm"} onSubmit={formik.handleSubmit} noValidate>
-      <label className={"FormLabelContainer"}>
-        Заголовок
-        <input
-          placeholder={"Заголовок"}
-          value={formik.values.title}
-          onChange={formik.handleChange}
-          name={"title"}
-          id={"title"}
-        />
-        {formik.touched.title && formik.errors.title ? (
-          <span className={"Error"}>{formik.errors.title}</span>
-        ) : null}
-      </label>
-
-      <label className={"FormLabelContainer"}>
-        Заголовок
-        <input
-          placeholder={"Текст"}
-          value={formik.values.description}
-          onChange={formik.handleChange}
-          name={"description"}
-          id={"description"}
-        />
-        {formik.touched.description && formik.errors.description ? (
-          <span className={"Error"}>{formik.errors.description}</span>
-        ) : null}
-      </label>
-      <label className={"FormLabelContainer"}>
-        Список дел (не меньше 5 символов)
-        <input
-          placeholder={"Текст пункта"}
-          value={formik.values.listItemText}
-          onChange={formik.handleChange}
-          name={"listItemText"}
-          id={"listItemText"}
-        />
-        {formik.touched.listItemText && formik.errors.listItemText ? (
-          <span className={"Error"}>{formik.errors.listItemText}</span>
-        ) : null}
-      </label>
-      {formik.values.list.length > 0 && (
-        <ul>
-          {formik.values.list.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      )}
-      <button
-        disabled={formik.values.listItemText.length < 5}
-        type={"button"}
-        onClick={addListItem}
+    <>
+      <Popup
+        open={openPopupWithAddTagForm}
+        title={"Добавить тег"}
+        closePopup={handleToggleOpenPopupWithAddTagForm}
       >
-        Добавить пункт
-      </button>
-      <div className={"WrapperTagsAndAddTagButton"}>
-        <TagsContainer
-          className={"TagContainerInNoteForm"}
-          toNoteForm
-          tagsToForm={formik.values.tags}
-          onClickToTag={handleTagsChange}
-        >
-          {formik.touched.tags && formik.errors.tags && (
-            <span className={"Error"}>Необходимо выбрать хотя бы один тег</span>
-          )}
-        </TagsContainer>
+        <AddTagForm
+          toggleOpenPopupWithAddForm={handleToggleOpenPopupWithAddTagForm}
+        />
+      </Popup>
+      <form className={"NoteForm"} onSubmit={formik.handleSubmit} noValidate>
+        <label className={"FormLabelContainer"}>
+          Заголовок
+          <input
+            placeholder={"Заголовок"}
+            value={formik.values.title}
+            onChange={formik.handleChange}
+            name={"title"}
+            id={"title"}
+          />
+          {formik.touched.title && formik.errors.title ? (
+            <span className={"Error"}>{formik.errors.title}</span>
+          ) : null}
+        </label>
 
+        <label className={"FormLabelContainer"}>
+          Заголовок
+          <input
+            placeholder={"Текст"}
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            name={"description"}
+            id={"description"}
+          />
+          {formik.touched.description && formik.errors.description ? (
+            <span className={"Error"}>{formik.errors.description}</span>
+          ) : null}
+        </label>
+        <label className={"FormLabelContainer"}>
+          Список дел (не меньше 5 символов)
+          <input
+            placeholder={"Текст пункта"}
+            value={formik.values.listItemText}
+            onChange={formik.handleChange}
+            name={"listItemText"}
+            id={"listItemText"}
+          />
+          {formik.touched.listItemText && formik.errors.listItemText ? (
+            <span className={"Error"}>{formik.errors.listItemText}</span>
+          ) : null}
+        </label>
+        {formik.values.list.length > 0 && (
+          <ul>
+            {formik.values.list.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        )}
         <button
-          className={"AddTag"}
+          disabled={formik.values.listItemText.length < 5}
           type={"button"}
-          onClick={handleOpenAddTagForm}
+          onClick={addListItem}
         >
-          Добавить тег
+          Добавить пункт
         </button>
-      </div>
-      <button
-        disabled={isEqual({ ...noteToForm, listItemText: "" }, formik.values)}
-      >
-        Отправить
-      </button>
-    </form>
+        <div className={"WrapperTagsAndAddTagButton"}>
+          <TagsContainer
+            className={"TagContainerInNoteForm"}
+            toNoteForm
+            tagsToForm={formik.values.tags}
+            onClickToTag={handleTagsChange}
+          >
+            {formik.touched.tags && formik.errors.tags && (
+              <span className={"Error"}>
+                Необходимо выбрать хотя бы один тег
+              </span>
+            )}
+          </TagsContainer>
+
+          <button
+            className={"AddTag"}
+            type={"button"}
+            onClick={handleToggleOpenPopupWithAddTagForm}
+          >
+            Добавить тег
+          </button>
+        </div>
+        <button
+          disabled={isEqual({ ...noteToForm, listItemText: "" }, formik.values)}
+        >
+          Отправить
+        </button>
+      </form>
+    </>
   );
 };

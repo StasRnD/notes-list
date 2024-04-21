@@ -18,7 +18,7 @@ export const initialDataForm: NoteItemProps = {
 };
 
 const globalInitialTagsJson =
-  '[{"text":"shopping","color":"#a171d2"},{"text":"business","color":"#e088d2"},{"text":"all other","color":"#eeaa79"}]';
+  '[{"text":"shopping","color":"#a171d2","id":"1"},{"text":"business","color":"#e088d2","id":"2"},{"text":"all other","color":"#eeaa79","id":"3"}]';
 
 export const initialTags: TagProps[] = JSON.parse(
   localStorage.getItem("tags") || globalInitialTagsJson,

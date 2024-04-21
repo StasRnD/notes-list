@@ -16,6 +16,7 @@ export interface NoteItemProps {
 export interface TagProps {
   text: string;
   color: string;
+  id: number;
 }
 
 export interface FilterSetting {
