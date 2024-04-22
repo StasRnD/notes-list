@@ -47,30 +47,31 @@ export const TagsContainer: React.FC<PropsWithChildren<TagsContainerProps>> = (
   };
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
-      <Droppable droppableId={"droppableId"} direction={"vertical"}>
-        {(provided) => {
-          return (
-            <div
-              className={`TagContainer ${className || ""}`}
-              ref={provided.innerRef}
-            >
-              {tagsList.map((tag) => {
-                return (
-                  <Tag
-                    style={{ background: `${tag.color}` }}
-                    onClick={() => handleClick(tag.text)}
-                    text={tag.text}
-                    active={
-                      (toNoteForm ? props.tagsToForm : activeTags)[tag.text]
-                    }
-                    id={Number(tag.id)}
-                  />
-                );
-              })}
-              {children}
-            </div>
-          );
-        }}
+      <Droppable droppableId={toNoteForm ? "dropNote" : "droppableId"}>
+        {(provided) => (
+          <ul
+            className={`TagContainer ${className || ""}`}
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            {tagsList.map((tag, index) => {
+              return (
+                <Tag
+                  key={tag.text}
+                  index={index}
+                  style={{ background: `${tag.color}` }}
+                  onClick={() => handleClick(tag.text)}
+                  text={tag.text}
+                  active={
+                    (toNoteForm ? props.tagsToForm : activeTags)[tag.text]
+                  }
+                />
+              );
+            })}
+            {children}
+            {provided.placeholder}
+          </ul>
+        )}
       </Droppable>
     </DragDropContext>
     // {/*{tagsList.map((tag) => {*/}

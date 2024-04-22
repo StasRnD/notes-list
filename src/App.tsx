@@ -19,6 +19,8 @@ const App = () => {
   const dispatch = useDispatch();
   const notesList = useSelector(SelectorNotes.notesList);
   const noteToForm = useSelector(SelectorNotes.noteToForm);
+  const filerNotes = useSelector(SelectorNotes.filterNotesList);
+
   const handleToggleOpenPopupWithNoteForm = (item?: NoteItemProps) => {
     if (item) {
       dispatch(updateNoteToForm(item));
@@ -57,6 +59,7 @@ const App = () => {
                 handleToggleOpenPopupWithNoteForm={
                   handleToggleOpenPopupWithNoteForm
                 }
+                filerNotes={filerNotes}
               />
             ) : (
               <span>Ничего не добавлено</span>

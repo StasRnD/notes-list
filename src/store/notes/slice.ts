@@ -18,6 +18,7 @@ export const notesReducer = createSlice({
   reducers: {
     addNote(state, { payload }: PayloadAction<NoteItemProps>) {
       state.notesList.push(payload);
+
       updateNotes(state.notesList);
     },
     deleteNote(state, { payload }: PayloadAction<number>) {

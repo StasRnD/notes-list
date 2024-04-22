@@ -1,7 +1,14 @@
 import React from "react";
 import { NoteItemProps } from "../../types";
-import { useDispatch } from "react-redux";
-import { deleteNote, updateGroupInNote } from "../../store/notes/slice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteNote,
+  getFilterNotesList,
+  updateGroupInNote,
+} from "../../store/notes/slice";
+import { SelectorTags } from "../../store/tags/selectors";
+import { SelectorsGroup } from "../../store/groups/selectors";
+import { SelectorSearch } from "../../store/search/selectors";
 
 interface NoteItemComponentProps {
   item: NoteItemProps;
@@ -14,6 +21,9 @@ export const NoteItemComponent: React.FC<NoteItemComponentProps> = ({
 }) => {
   const { title, description, list } = item;
   const dispatch = useDispatch();
+  const activeTags = useSelector(SelectorTags.activeTags);
+  const activeGroup = useSelector(SelectorsGroup.activeGroup);
+  const searchValue = useSelector(SelectorSearch.searchValue);
 
   const handleToggleGroupItem = (
     event: React.MouseEvent<HTMLImageElement>,
@@ -25,6 +35,7 @@ export const NoteItemComponent: React.FC<NoteItemComponentProps> = ({
       return;
     }
     dispatch(updateGroupInNote({ item, name }));
+    dispatch(getFilterNotesList({ searchValue, activeTags, activeGroup }));
   };
 
   return (

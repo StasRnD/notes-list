@@ -23,7 +23,7 @@ export const tagsReducer = createSlice({
       { payload }: PayloadAction<{ from: number; to: number }>,
     ) {
       const tags = state.tags;
-      if (!tags) return;
+
       const { from, to } = payload;
       const copy = [...tags];
       const [removed] = copy.splice(from, 1);

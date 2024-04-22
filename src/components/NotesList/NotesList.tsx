@@ -10,19 +10,12 @@ import { getFilterNotesList } from "../../store/notes/slice";
 
 interface NotesListProps {
   handleToggleOpenPopupWithNoteForm: (item: NoteItemProps) => void;
+  filerNotes: NoteItemProps[];
 }
 export const NotesList: React.FC<NotesListProps> = ({
   handleToggleOpenPopupWithNoteForm,
+  filerNotes,
 }) => {
-  const dispatch = useDispatch();
-  const activeTags = useSelector(SelectorTags.activeTags);
-  const activeGroup = useSelector(SelectorsGroup.activeGroup);
-  const searchValue = useSelector(SelectorSearch.searchValue);
-  const filerNotes = useSelector(SelectorNotes.filterNotesList);
-
-  useEffect(() => {
-    dispatch(getFilterNotesList({ searchValue, activeTags, activeGroup }));
-  }, [activeGroup, activeTags, searchValue]);
   return (
     <ul className={"NotesList"}>
       {filerNotes.length > 0 ? (

@@ -7,7 +7,7 @@ interface TagProps {
   active?: boolean;
   className?: string;
   style?: React.CSSProperties;
-  id: number;
+  index: number;
 }
 
 export const Tag: React.FC<TagProps> = ({
@@ -15,33 +15,26 @@ export const Tag: React.FC<TagProps> = ({
   active,
   className,
   text,
-  id,
   style,
+  index,
 }) => {
-  const blockRef: MutableRefObject<HTMLDivElement | null> =
-    useRef<HTMLDivElement>(null);
   return (
-    <Draggable key={id} draggableId={text} index={id}>
-      {(provided) => {
-        return (
-          <div
-            ref={(el) => {
-              provided.innerRef(el);
-              blockRef.current = el;
-            }}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
+    <Draggable key={text} draggableId={text} index={index}>
+      {(provided) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          onClick={onClick}
+        >
+          <p
+            className={`Tag ${active ? "active" : ""} ${className || ""}`}
+            style={{ margin: "10px", ...style }}
           >
-            <div
-              onClick={onClick}
-              className={`Tag ${active ? "active" : ""} ${className || ""}`}
-              style={style}
-            >
-              {text}
-            </div>
-          </div>
-        );
-      }}
+            {text}
+          </p>
+        </div>
+      )}
     </Draggable>
   );
 };
