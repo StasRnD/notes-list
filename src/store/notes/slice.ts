@@ -7,7 +7,6 @@ import {
   initialNotes,
   initialTags,
 } from "../../constans";
-import { useDispatch } from "react-redux";
 
 export const notesReducer = createSlice({
   name: "notesReducer",

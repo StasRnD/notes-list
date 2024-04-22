@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./index.css";
 import { NoteItemProps } from "./types";
 import { Popup } from "./components/Popup/Popup";
 import { NoteForm } from "./components/NoteForm/NoteForm";
-import { AddTagForm } from "./components/AddTagForm/AddTagForm";
 import { GroupsPanel } from "./components/GroupsPanel/GroupsPanel";
-import { NotesList } from "./components/Notes/NotesList/NotesList";
 import { useDispatch, useSelector } from "react-redux";
 import { SelectorNotes } from "./store/notes/selectors";
 import { updateNoteToForm } from "./store/notes/slice";
