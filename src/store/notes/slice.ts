@@ -7,6 +7,7 @@ import {
   initialNotes,
   initialTags,
 } from "../../constans";
+import { store } from "../store";
 
 export const notesReducer = createSlice({
   name: "notesReducer",
@@ -20,16 +21,35 @@ export const notesReducer = createSlice({
     activeTags: initialFilterTags,
   },
   reducers: {
+    getFilterNotesList(
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        searchValue: string;
+        activeGroup: keyof NoteItemProps["groups"] | null;
+        activeTags: NoteItemProps["tags"];
+      }>,
+    ) {
+      state.filteredNotesList = filterNotes(
+        state.notesList,
+        payload.searchValue,
+        payload.activeGroup,
+        payload.activeTags,
+      );
+    },
     addNote(state, { payload }: PayloadAction<NoteItemProps>) {
       state.notesList.push(payload);
       updateNotes(state.notesList);
-      state.filteredNotesList = filterNotes(
-        state.notesList,
-        state.searchValue,
-        state.activeGroup,
-        state.activeTags,
-      );
+      // store.dispatch(
+      //   getFilterNotesList({
+      //     searchValue: state.searchValue,
+      //     activeGroup: state.activeGroup,
+      //     activeTags: state.activeTags,
+      //   }),
+      // );
     },
+
     deleteNote(state, { payload }: PayloadAction<number>) {
       state.notesList = state.notesList.filter((note) => {
         return Number(note.id) !== payload;
@@ -143,10 +163,10 @@ export const {
   updateNote,
   updateGroupInNote,
   updateNoteToForm,
-  // getFilterNotesList,
   changeSearchValue,
   updateActiveGroup,
   addGlobalTag,
   updateActiveTags,
   reorderTagsList,
+  getFilterNotesList,
 } = notesReducer.actions;
