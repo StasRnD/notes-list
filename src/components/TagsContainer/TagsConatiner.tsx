@@ -1,13 +1,14 @@
 import { Tag } from "../Tag/Tag";
 import React, { PropsWithChildren } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SelectorTags } from "../../store/tags/selectors";
-import { reorderTagsList, updateActiveTags } from "../../store/tags/slice";
+import { SelectorNotes } from "../../store/notes/selectors";
+import { reorderTagsList, updateActiveTags } from "../../store/notes/slice";
 import {
   DragDropContext,
   OnDragEndResponder,
   Droppable,
 } from "react-beautiful-dnd";
+
 type TagsContainerProps = {
   className?: string;
 } & (
@@ -25,8 +26,8 @@ export const TagsContainer: React.FC<PropsWithChildren<TagsContainerProps>> = (
   props,
 ) => {
   const { className, toNoteForm, children } = props;
-  const tagsList = useSelector(SelectorTags.tagsList);
-  const activeTags = useSelector(SelectorTags.activeTags);
+  const tagsList = useSelector(SelectorNotes.tagsList);
+  const activeTags = useSelector(SelectorNotes.activeTags);
   const dispatch = useDispatch();
 
   const handleClick = (tagName: string) => {

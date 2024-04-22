@@ -5,7 +5,6 @@ import { NoteItemProps } from "../../types";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { addNote, updateNote } from "../../store/notes/slice";
-import { SelectorTags } from "../../store/tags/selectors";
 import { SelectorNotes } from "../../store/notes/selectors";
 import { TagsContainer } from "../TagsContainer/TagsConatiner";
 import { Popup } from "../Popup/Popup";
@@ -24,7 +23,7 @@ export const NoteForm: React.FC<NoteFormProps> = ({ closePopup }) => {
   };
 
   const dispatch = useDispatch();
-  const tagsList = useSelector(SelectorTags.tagsList);
+  const tagsList = useSelector(SelectorNotes.tagsList);
   const notesList = useSelector(SelectorNotes.notesList);
   const noteToForm = useSelector(SelectorNotes.noteToForm);
 

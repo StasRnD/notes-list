@@ -8,7 +8,7 @@ export const updateTags = (tags: TagProps[]) => {
   localStorage.setItem("tags", JSON.stringify(tags, null, 1));
 };
 
-export const filterByTags = (
+const filterByTags = (
   item: NoteItemProps,
   activeTags: NoteItemProps["tags"],
 ) => {
@@ -23,16 +23,13 @@ export const filterByTags = (
   return activeFilterTagsText.some((el) => item.tags[el]);
 };
 
-export const filterBySearchValue = (
-  item: NoteItemProps,
-  searchValue: string,
-) => {
+const filterBySearchValue = (item: NoteItemProps, searchValue: string) => {
   return (item.title + item.description + item.list.join(""))
     .toLocaleLowerCase()
     .includes(searchValue.toLocaleLowerCase().trim());
 };
 
-export const filterByActiveGroup = (
+const filterByActiveGroup = (
   item: NoteItemProps,
   activeGroup: keyof NoteItemProps["groups"] | null,
 ) => {
@@ -43,4 +40,16 @@ export const filterByActiveGroup = (
     return item.groups.isFavorite && !item.groups.isTrust;
   }
   return !item.groups.isTrust;
+};
+
+export const filterNotes = (
+  notes: NoteItemProps[],
+  searchValue: string,
+  activeGroup: keyof NoteItemProps["groups"] | null,
+  activeTags: NoteItemProps["tags"],
+) => {
+  return notes
+    .filter((item) => filterByActiveGroup(item, activeGroup))
+    .filter((item) => filterByTags(item, activeTags))
+    .filter((item) => filterBySearchValue(item, searchValue));
 };

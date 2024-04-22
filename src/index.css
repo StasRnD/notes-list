@@ -1,11 +1,11 @@
 @import 'App.css';
 @import "components/Popup/Popup.css";
 @import "components/Tag/Tag.css";
-@import "components/NoteItem/NoteItem.css";
+@import "components/Notes/NoteItem/NoteItem.css";
 @import "components/NoteForm/NoteForm.css";
 @import "components/AddTagForm/AddTagForm.css";
 @import "components/GroupsPanel/GroupsPanel.css";
-@import "components/NotesList/NotesList.css";
+@import "components/Notes/NotesList/NotesList.css";
 @import "components/TagsContainer/TagContainer.css";
 
 body {

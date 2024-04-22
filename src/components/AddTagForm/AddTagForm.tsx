@@ -3,8 +3,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TagProps } from "../../types";
 import { useDispatch, useSelector } from "react-redux";
-import { addGlobalTag } from "../../store/tags/slice";
-import { SelectorTags } from "../../store/tags/selectors";
+import { addGlobalTag } from "../../store/notes/slice";
+import { SelectorNotes } from "../../store/notes/selectors";
 
 interface AddTagFormProps {
   toggleOpenPopupWithAddForm: VoidFunction;
@@ -13,7 +13,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
   toggleOpenPopupWithAddForm,
 }) => {
   const dispatch = useDispatch();
-  const tagsList = useSelector(SelectorTags.tagsList);
+  const tagsList = useSelector(SelectorNotes.tagsList);
   const formik = useFormik<TagProps>({
     initialValues: {
       text: "",

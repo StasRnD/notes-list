@@ -1,20 +1,22 @@
 import { NoteItemComponent } from "../NoteItem/NoteItem";
-import React, { useEffect } from "react";
-import { NoteItemProps } from "../../types";
-import { useDispatch, useSelector } from "react-redux";
-import { SelectorNotes } from "../../store/notes/selectors";
-import { SelectorSearch } from "../../store/search/selectors";
-import { SelectorTags } from "../../store/tags/selectors";
-import { SelectorsGroup } from "../../store/groups/selectors";
-import { getFilterNotesList } from "../../store/notes/slice";
+import React from "react";
+import { NoteItemProps } from "../../../types";
+
+//Сделать WRAPPER для noteList, сделать компонент максимально независимым)
 
 interface NotesListProps {
   handleToggleOpenPopupWithNoteForm: (item: NoteItemProps) => void;
   filerNotes: NoteItemProps[];
+  handleToggleGroupItem: (
+    event: React.MouseEvent<HTMLImageElement>,
+    name: keyof NoteItemProps["groups"],
+    item: NoteItemProps,
+  ) => void;
 }
 export const NotesList: React.FC<NotesListProps> = ({
   handleToggleOpenPopupWithNoteForm,
   filerNotes,
+  handleToggleGroupItem,
 }) => {
   return (
     <ul className={"NotesList"}>
@@ -24,6 +26,7 @@ export const NotesList: React.FC<NotesListProps> = ({
             <NoteItemComponent
               onClick={() => handleToggleOpenPopupWithNoteForm(item)}
               item={item}
+              handleToggleGroupItem={handleToggleGroupItem}
             />
           );
         })

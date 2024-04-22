@@ -5,12 +5,13 @@ import { Popup } from "./components/Popup/Popup";
 import { NoteForm } from "./components/NoteForm/NoteForm";
 import { AddTagForm } from "./components/AddTagForm/AddTagForm";
 import { GroupsPanel } from "./components/GroupsPanel/GroupsPanel";
-import { NotesList } from "./components/NotesList/NotesList";
+import { NotesList } from "./components/Notes/NotesList/NotesList";
 import { useDispatch, useSelector } from "react-redux";
 import { SelectorNotes } from "./store/notes/selectors";
-import { getFilterNotesList, updateNoteToForm } from "./store/notes/slice";
+import { updateNoteToForm } from "./store/notes/slice";
 import { initialDataForm } from "./constans";
 import { TagsContainer } from "./components/TagsContainer/TagsConatiner";
+import { NotesWrapper } from "./components/Notes/NotesWrapper";
 
 const App = () => {
   const [openPopupWithNoteForm, setOpenPopupWithNoteForm] =
@@ -19,7 +20,6 @@ const App = () => {
   const dispatch = useDispatch();
   const notesList = useSelector(SelectorNotes.notesList);
   const noteToForm = useSelector(SelectorNotes.noteToForm);
-  const filerNotes = useSelector(SelectorNotes.filterNotesList);
 
   const handleToggleOpenPopupWithNoteForm = (item?: NoteItemProps) => {
     if (item) {
@@ -55,11 +55,10 @@ const App = () => {
           </div>
           <div>
             {notesList.length ? (
-              <NotesList
+              <NotesWrapper
                 handleToggleOpenPopupWithNoteForm={
                   handleToggleOpenPopupWithNoteForm
                 }
-                filerNotes={filerNotes}
               />
             ) : (
               <span>Ничего не добавлено</span>
